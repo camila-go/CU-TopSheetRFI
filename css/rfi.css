@@ -370,6 +370,155 @@
   display: none;
 }
 
+/* ---------------------------------------------------------------------------
+   Incomplete toast — the abandonment nudge shown when the sheet is closed
+   without the form being completed.
+
+   Figma: ToastOptions (30:7194), `size=toastDT` 43:8778 / `size=toastMobile`
+   43:8779. Placement taken from the DTincomplete frame (20:6914 — toast at
+   x=1289 of 1728, y=55) and `incomplete- toast popUp` (1:17644 — x=16, y=672
+   of 375x844).
+
+   Values are literal because they come from the toast component, not the
+   page's token set: body copy #434343, link #c10016 Inter Bold 14, progress
+   track #ccc with a #70b0ba fill (NOT --color-stat-blue #94b7bb, which is a
+   different teal).
+--------------------------------------------------------------------------- */
+
+.rfi-toast {
+  position: fixed;
+  z-index: 220; /* above the page, below the skip link (300) */
+  display: flex;
+  flex-direction: column;
+  width: 345px; /* size=toastMobile */
+  background: var(--color-white);
+  border-radius: 4px;
+  box-shadow: 0 4px 8px rgba(33, 35, 34, 0.2); /* shadow-med */
+  opacity: 0;
+  transform: translateY(8px);
+  transition:
+    opacity var(--duration-fast) ease,
+    transform var(--duration-fast) ease;
+  /* Mobile placement: 16px gutters, clear of the sticky action bar. */
+  left: 16px;
+  right: 16px;
+  bottom: 59px;
+}
+
+.rfi-toast[hidden] {
+  display: none;
+}
+
+.rfi-toast.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.rfi-toast__inner {
+  display: flex;
+  flex-direction: column;
+  gap: 24px; /* gl-base-unit-24 */
+  padding: 12px; /* gl-base-unit-12 */
+}
+
+.rfi-toast__row {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+}
+
+.rfi-toast__copy {
+  flex: 1;
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: var(--text-ui-sm); /* 12px, ui-xs-subtle */
+  font-weight: 400;
+  line-height: 1.5;
+  color: #434343;
+}
+
+.rfi-toast__close {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #707070; /* CU/Orion Gray */
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.rfi-toast__close:focus-visible {
+  outline: 2px solid var(--color-uni-black);
+  outline-offset: 2px;
+}
+
+/* Link row is right-aligned in the component. */
+.rfi-toast__link {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px; /* gl-base-unit-4 */
+  padding-right: 8px; /* gl-base-unit-8 */
+  font-family: var(--font-body);
+  font-size: 0.875rem; /* 14px, ui-sm-default */
+  font-weight: 700;
+  line-height: 1.5;
+  color: var(--color-uni-red);
+  text-decoration: none;
+}
+
+.rfi-toast__link:hover {
+  text-decoration: underline;
+}
+
+/* Auto-dismiss countdown. The fill shrinks to zero over the toast's life. */
+.rfi-toast__progress {
+  height: 4px;
+  background: #ccc;
+  border-radius: 0 0 4px 4px;
+  overflow: hidden;
+}
+
+.rfi-toast__bar {
+  height: 4px;
+  width: 100%;
+  background: #70b0ba;
+  border-radius: 0 0 0 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  transform-origin: left center;
+}
+
+.rfi-toast.is-counting .rfi-toast__bar {
+  transform: scaleX(0);
+  transition: transform var(--rfi-toast-life, 10s) linear;
+}
+
+/* Reduced motion: no slide, no countdown animation. The toast still
+   auto-dismisses on the same timer, it just does not animate the bar. */
+@media (prefers-reduced-motion: reduce) {
+  .rfi-toast {
+    transition: none;
+    transform: none;
+  }
+
+  .rfi-toast.is-counting .rfi-toast__bar {
+    transition: none;
+  }
+}
+
+@media (min-width: 768px) {
+  .rfi-toast {
+    width: 410px; /* size=toastDT */
+    left: auto;
+    right: 29px;
+    top: 55px;
+    bottom: auto;
+  }
+}
+
 /* ---- Desktop ----------------------------------------------------------- */
 /* Right-aligned modal, matching .sheet and the Figma `DT` frames. */
 @media (min-width: 768px) {

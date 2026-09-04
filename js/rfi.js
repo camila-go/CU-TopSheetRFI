@@ -64,6 +64,9 @@ function initRfi() {
   const program = rfi.querySelector('#rfi-program');
 
   let lastFocused = null;
+  /* Set once the form validates and submits, so closing after a completed
+     form never fires the "not into forms?" nudge. */
+  let completed = false;
 
   /* ---- Dropdowns, cascading level → area → programme ------------------- */
 
@@ -204,6 +207,7 @@ function initRfi() {
   form.addEventListener('submit', (event) => {
     event.preventDefault();
     if (!validateStep(1)) return;
+    completed = true;
     /* The design has no post-submit state — step 10 (the filled step 2) is where
        the Figma flow ends, and there is no endpoint here to submit to. So the
        sheet just closes once the form validates. Do NOT invent a confirmation
@@ -235,7 +239,45 @@ function initRfi() {
     panel.querySelector(FOCUSABLE)?.focus();
   }
 
+  /* ---- Incomplete toast ------------------------------------------------ */
+  /* Shown when the sheet is closed with the form unfinished. Once per page
+     view: nudging repeatedly on every close would be nagging, not helpful. */
+
+  const toast = document.querySelector('[data-rfi-toast]');
+  const toastBar = toast?.querySelector('[data-rfi-toast-bar]');
+  const TOAST_LIFE_MS = 10000;
+  let toastShown = false;
+  let toastTimer = null;
+
+  function hideToast() {
+    if (!toast) return;
+    clearTimeout(toastTimer);
+    toast.classList.remove('is-visible', 'is-counting');
+    const done = () => {
+      toast.hidden = true;
+    };
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) done();
+    else setTimeout(done, 200); /* --duration-fast */
+  }
+
+  function showToast() {
+    if (!toast || toastShown) return;
+    toastShown = true;
+    toast.hidden = false;
+    toast.style.setProperty('--rfi-toast-life', `${TOAST_LIFE_MS}ms`);
+    /* Reset the countdown bar to full, then start it — same forced-reflow
+       reason as the sheet: without it the bar has no start state to move from. */
+    if (toastBar) toastBar.style.transform = '';
+    void toast.offsetHeight;
+    toast.classList.add('is-visible', 'is-counting');
+    toastTimer = setTimeout(hideToast, TOAST_LIFE_MS);
+  }
+
+  toast?.querySelector('[data-rfi-toast-close]')?.addEventListener('click', hideToast);
+
   function close() {
+    /* Closing an unfinished form is what the nudge responds to. */
+    const abandoned = !completed;
     rfi.classList.remove('is-open');
     panel.setAttribute('aria-hidden', 'true');
     document.documentElement.style.overflow = '';
@@ -243,6 +285,9 @@ function initRfi() {
     const done = () => {
       scrim.hidden = true;
       panel.hidden = true;
+      /* Nudge only after the sheet is out of the way, so the two do not
+         animate over each other. */
+      if (abandoned) showToast();
     };
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) done();
     else setTimeout(done, 450); /* --duration-med */

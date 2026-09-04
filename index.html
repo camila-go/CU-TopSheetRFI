@@ -1055,6 +1055,29 @@
       </section>
     </div>
 
+    <!-- Abandonment nudge, shown when the sheet is closed with the form
+         incomplete. Figma: ToastOptions (30:7194) / DTincomplete (20:6914). -->
+    <div class="rfi-toast" data-rfi-toast role="status" aria-live="polite" hidden>
+      <div class="rfi-toast__inner">
+        <div class="rfi-toast__row">
+          <p class="rfi-toast__copy">
+            Not into forms? We understand. We’re happy to chat over the phone with you and answer
+            any questions.
+          </p>
+          <button type="button" class="rfi-toast__close" data-rfi-toast-close aria-label="Dismiss">
+            <i class="fa-regular fa-xmark" aria-hidden="true"></i>
+          </button>
+        </div>
+        <a class="rfi-toast__link" href="tel:1-866-679-9682">
+          <i class="fa-regular fa-circle-phone" aria-hidden="true"></i>
+          Speak to an advisor now
+        </a>
+      </div>
+      <div class="rfi-toast__progress">
+        <div class="rfi-toast__bar" data-rfi-toast-bar></div>
+      </div>
+    </div>
+
     <script type="module" src="/js/nav.js"></script>
     <script type="module" src="/js/hero.js"></script>
     <script type="module" src="/js/footer.js"></script>
