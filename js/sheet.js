@@ -290,7 +290,12 @@ function initSheet() {
         sheet.classList.add('is-open');
       });
     });
-    document.body.style.overflow = 'hidden';
+    /* ⚠️ Lock the SCROLLING ELEMENT (<html>), not <body>. Giving <body>
+       `overflow: hidden` makes it a scroll container, which re-parents every
+       `position: sticky` element to it — the sticky nav then resolves against
+       body (scrollTop 0) instead of the real scroller and jumps up the page by
+       exactly the current scroll offset. */
+    document.documentElement.style.overflow = 'hidden';
     render();
     // Focus the first control so keyboard users land inside the dialog.
     (sheet.querySelector('.sheet__input') || nextBtn).focus();
@@ -299,7 +304,7 @@ function initSheet() {
   function close() {
     scrim.classList.remove('is-open');
     sheet.classList.remove('is-open');
-    document.body.style.overflow = '';
+    document.documentElement.style.overflow = '';
     const done = () => {
       sheet.hidden = true;
       scrim.hidden = true;

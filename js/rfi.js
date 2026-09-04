@@ -219,7 +219,11 @@ function initRfi() {
     void panel.offsetHeight;
     rfi.classList.add('is-open');
     panel.setAttribute('aria-hidden', 'false');
-    document.body.style.overflow = 'hidden';
+    /* ⚠️ Lock the SCROLLING ELEMENT (<html>), not <body> — see the same note in
+       js/sheet.js. `overflow: hidden` on <body> makes it a scroll container and
+       re-parents the sticky nav to it, which jumps the nav up the page by the
+       current scroll offset the moment the sheet opens. */
+    document.documentElement.style.overflow = 'hidden';
     showStep(0);
     panel.querySelector(FOCUSABLE)?.focus();
   }
@@ -227,7 +231,7 @@ function initRfi() {
   function close() {
     rfi.classList.remove('is-open');
     panel.setAttribute('aria-hidden', 'true');
-    document.body.style.overflow = '';
+    document.documentElement.style.overflow = '';
     lastFocused?.focus();
     const done = () => {
       scrim.hidden = true;
