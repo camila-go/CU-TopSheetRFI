@@ -399,10 +399,21 @@
   transition:
     opacity var(--duration-fast) ease,
     transform var(--duration-fast) ease;
-  /* Mobile placement: 16px gutters, clear of the sticky action bar. */
+  /* Mobile placement: 16px gutters. Between 576-767px there is no action bar,
+     so the toast just sits above the bottom edge. */
   left: 16px;
   right: 16px;
-  bottom: 59px;
+  bottom: 16px;
+}
+
+/* ≤575px is where main.css pins the fixed red action bar (50px tall,
+   z-index 120). Sit a full gutter clear of it rather than assuming a fixed
+   offset — the toast overlapping that bar is what the Figma's 59px on a
+   375px frame was avoiding. */
+@media (max-width: 575px) {
+  .rfi-toast {
+    bottom: calc(50px + 16px);
+  }
 }
 
 .rfi-toast[hidden] {
