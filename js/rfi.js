@@ -203,7 +203,14 @@ function initRfi() {
 
   form.addEventListener('submit', (event) => {
     event.preventDefault();
-    if (validateStep(1)) showStep(2);
+    if (!validateStep(1)) return;
+    /* The design has no post-submit state — step 10 (the filled step 2) is where
+       the Figma flow ends, and there is no endpoint here to submit to. So the
+       sheet just closes once the form validates. Do NOT invent a confirmation
+       panel: the only designed follow-up state in the file is the `incomplete`
+       toast (DTincomplete / `incomplete- toast popUp`), which is an abandonment
+       nudge, not an acknowledgement. */
+    close();
   });
 
   /* ---- Open / close ---------------------------------------------------- */

@@ -370,15 +370,6 @@
   display: none;
 }
 
-.rfi__success {
-  padding: 32px 0;
-}
-
-.rfi__success p {
-  font-size: var(--text-body);
-  line-height: 1.5;
-}
-
 /* ---- Desktop ----------------------------------------------------------- */
 /* Right-aligned modal, matching .sheet and the Figma `DT` frames. */
 @media (min-width: 768px) {
