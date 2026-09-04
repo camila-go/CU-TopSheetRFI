@@ -192,11 +192,24 @@
   cursor: pointer;
 }
 
-.rfi__select:focus-visible,
-.rfi__input:focus-visible {
-  outline: 2px solid var(--focus-ring-red);
+/* gl-color-outline-focused, 2px — the `button/.focus-ring` component. Blue,
+   not red: an earlier --focus-ring-red here did not come from the design. */
+/* `:focus`, not `:focus-visible` — the design shows the ring on a clicked
+   dropdown (variant step=2) and on the errored field that validation jumps to
+   after submit (ErrorStep2), and programmatic focus does not reliably match
+   :focus-visible. */
+.rfi__select:focus,
+.rfi__input:focus {
+  outline: 2px solid #0f7bd9;
   outline-offset: -1px;
-  border-color: var(--color-uni-red);
+  border-color: #0f7bd9;
+}
+
+/* A focused field in error keeps the blue ring while its message band stays,
+   as in ErrorStep2's focused first-name field. */
+.rfi__field.is-invalid .rfi__select:focus,
+.rfi__field.is-invalid .rfi__input:focus {
+  border-color: #0f7bd9;
 }
 
 .rfi__select:disabled {
@@ -205,15 +218,16 @@
   cursor: not-allowed;
 }
 
-/* Step 2 stacks a small field name above the value, per variant step=10. */
+/* Step 2 stacks a small field name above the value, per variant step=10.
+   Total stays at the 48px control height: 20 + 24 (16px x 1.5) + 4. */
 .rfi__field--stacked .rfi__input {
-  height: auto;
-  padding: 22px var(--rfi-gap) 8px;
+  height: var(--rfi-field-h);
+  padding: 20px var(--rfi-gap) 4px;
 }
 
 .rfi__field--stacked .rfi__label {
   position: absolute;
-  top: 6px;
+  top: 5px;
   left: var(--rfi-gap);
   font-size: 0.625rem; /* 10px */
   line-height: 1.5;
@@ -241,21 +255,44 @@
   padding-right: 44px;
 }
 
+/* Error state — the message is part of the field, not a sibling below it.
+   The control keeps its 48px box with square bottom corners and the message
+   band attaches directly beneath inside the same border.
+   Figma: dropdown/input `error` variant (1:20022), which grows 48px -> 63px.
+     border + icon  gl-color-error-subtle-on-surface  #d91111
+     band fill      gl-color-surface-status-error     #fff5f5
+     message text   gl-color-error-default-on-surface #9c0c0c */
 .rfi__field.is-invalid .rfi__select,
 .rfi__field.is-invalid .rfi__input {
-  border-color: var(--color-uni-red);
+  border-color: #d91111;
+  border-radius: var(--rfi-radius-input) var(--rfi-radius-input) 0 0;
 }
 
 .rfi__error {
   display: none;
-  margin: 4px 0 0;
-  color: var(--color-uni-red);
-  font-size: var(--text-ui-sm);
+  align-items: center;
+  gap: 4px; /* gl-margin-4xs */
+  margin: 0;
+  padding: 1px 12px 2px; /* base-unit-3 sides */
+  background: #fff5f5;
+  border: 1px solid #d91111;
+  border-top: 0;
+  border-radius: 0 0 var(--rfi-radius-input) var(--rfi-radius-input);
+  color: #9c0c0c;
+  /* gl-size-3xs. Deliberately tiny — this is the token the component uses. */
+  font-size: 8px;
   line-height: 1.5;
 }
 
+.rfi__error .svg-inline--fa,
+.rfi__error i {
+  flex: none;
+  font-size: 8px;
+  color: #d91111;
+}
+
 .rfi__field.is-invalid .rfi__error {
-  display: block;
+  display: flex;
 }
 
 /* ---- Radio groups ------------------------------------------------------ */
@@ -271,11 +308,11 @@
   gap: 32px;
 }
 
-.rfi__radios.is-invalid {
-  outline: 1px solid var(--color-uni-red);
-  outline-offset: 8px;
-  border-radius: var(--rfi-radius-input);
-}
+/* ⚠️ The design has NO error state for the radio groups — ErrorStep2 shows
+   them unstyled. An earlier red outline box here was invented, so it is gone.
+   Validation still blocks submission and moves focus to the first unanswered
+   group; if that needs visible feedback, it wants a designed state rather than
+   another guess. */
 
 .rfi__radio {
   display: inline-flex;

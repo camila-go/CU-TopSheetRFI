@@ -36,10 +36,19 @@ const VALIDATORS = {
   zip: (v) => /^\d{5}$/.test(v),
 };
 
+/* Per-field messages, verbatim from the ErrorStep1 / ErrorStep2 frames
+   (1:19866 / 1:20089). The design gives one message per field rather than a
+   generic string, and has no separate copy for a malformed-but-present value,
+   so the same message covers both empty and invalid. */
 const ERROR_TEXT = {
-  email: 'Enter a valid email address.',
-  phone: 'Enter a 10-digit phone number.',
-  zip: 'Enter a 5-digit zip code.',
+  degree: 'Please select a degree level',
+  area: 'Please select an area of study',
+  program: 'Please select a program of interest',
+  'first-name': 'Please enter your first name',
+  'last-name': 'Please enter your last name',
+  email: 'Please enter your email address',
+  phone: 'Please enter your phone number',
+  zip: 'Please enter your ZIP code',
 };
 
 function isValid(name, value) {
@@ -129,7 +138,9 @@ function initRfi() {
     if (!field) return;
     field.classList.add('is-invalid');
     field.classList.remove('is-valid');
-    const error = field.querySelector('.rfi__error');
+    /* Write to the text span, not the <p> — the <p> also holds the
+       circle-exclamation icon, which textContent on the parent would wipe. */
+    const error = field.querySelector('.rfi__error-text');
     if (error && message) error.textContent = message;
   }
 
