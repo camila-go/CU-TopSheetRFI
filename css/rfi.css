@@ -279,15 +279,20 @@
   border-top: 0;
   border-radius: 0 0 var(--rfi-radius-input) var(--rfi-radius-input);
   color: #9c0c0c;
-  /* gl-size-3xs. Deliberately tiny — this is the token the component uses. */
-  font-size: 8px;
+  /* ⚠️ DELIBERATE DEVIATION from the component, which specifies gl-size-3xs
+     (8px) — a sizing token used as a font size, almost certainly a slip in
+     the Figma. 8px is below any reasonable legibility floor, so this uses
+     gl-font-size-ui-sm (12px) instead, the size the rest of the form's small
+     copy already uses. The icon scales with it to keep the 1:1 ratio the
+     component has. Everything else here is the component's own values. */
+  font-size: var(--text-ui-sm);
   line-height: 1.5;
 }
 
 .rfi__error .svg-inline--fa,
 .rfi__error i {
   flex: none;
-  font-size: 8px;
+  font-size: var(--text-ui-sm);
   color: #d91111;
 }
 
