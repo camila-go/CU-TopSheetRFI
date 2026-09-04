@@ -1,104 +1,125 @@
-# Capella University Homepage (v2)
+# CU Homepage — Bottom Sheet App
 
-Vanilla HTML, CSS, and JavaScript implementation of the Capella University
-homepage from Figma. No framework, no CSS preprocessor — Vite is used only as
-the dev server and bundler.
+Vanilla HTML / CSS / JS replica of the [capella.edu](https://www.capella.edu/)
+homepage, built as the surface for bottom-sheet UI work.
+Repo: <https://github.com/camila-go/CU-Homepage-BottomSheetApp>
 
-This is the **second version** of the homepage. See
-[`HANDOFF.md`](HANDOFF.md) for what changed from v1 and for the engineering
-detail behind everything below, and [`DEBUGGING.md`](DEBUGGING.md) when
-something looks broken — it is a symptom-first runbook covering the traps this
-codebase has already hit.
+**Design north star: the live site.** [DESIGN.md](DESIGN.md) is the measured spec —
+palette, type, header metrics, band-by-band structure — all read off the rendered
+page rather than guessed. Match it when adding anything new.
 
-## Getting started
-
-```bash
-npm install
-```
-
-```bash
-npm run dev
-```
-
-Open [http://localhost:5173](http://localhost:5173).
-
-To build for production:
-
-```bash
-npm run build
-```
-
-```bash
-npm run preview
-```
-
-## Project structure
+## Layout
 
 ```
-index.html         # Page markup (single page)
-css/
-  tokens.css       # Design tokens — colors, type scale, spacing, motion,
-                   #   nav interaction states
-  styles.css       # All styles (mobile-first, @imports tokens.css)
-js/
-  main.js          # Carousel, program finder, and all scroll/reveal animations
-public/assets/     # Committed image assets (SVG / PNG / JPG / WebP)
-  videos/          # CTA band background clip — 3 encodes, each MP4 + WebM
-HANDOFF.md         # Engineering handoff: gotchas, breakpoints, asset contracts
+index.html          head (fonts) + header + six homepage bands + footer + mobile action bar
+DESIGN.md           measured spec for capella.edu — read this first
+css/tokens.css      design tokens
+css/base.css        reset, .page-container, shared .btn variants
+css/nav.css         header structure + the v2 prototype's dark skin
+css/nav-live.css    re-paints the header to the LIVE skin  ← remove to get the prototype look
+css/main.css        the six homepage bands + mobile action bar
+css/footer.css      footer columns, legal block, partner carousel
+js/nav.js           nav scroll state, megamenus, mobile view stack
+js/footer.js        partner carousel
+public/assets/      imagery (1.1 MB total)
 ```
 
-`js/main.js` is a set of small `init*` functions, all called on
-`DOMContentLoaded`. The motion ones bail early on `prefers-reduced-motion`; the
-navigation and form ones always run, since they're behaviour rather than
-animation:
+⚠️ **Stylesheet order is `base → nav → nav-live → main → footer`.** `base` defines
+what the others build on, and `nav-live` must follow `nav` to override its skin.
 
-| Function | Responsibility |
+### Why nav-live.css is a separate layer
+
+`nav.css` is the header lifted from the
+[CU-Homepage-Test-v2](https://github.com/camila-go/CU-Homepage-Test-v2) prototype
+(commit `0e61516`) — a **dark, pill-shaped redesign** that does not match the live
+site. Every behaviour in `js/nav.js` was verified against that markup, so rather
+than surgically rewriting 1000 lines and risking the megamenu positioning,
+`nav-live.css` only re-paints it. The structure and behaviour stay untouched.
+
+## Provenance
+
+| Here | Source |
 | --- | --- |
-| `initCarousel` | Featured-story carousel — dots, swipe, keyboard, card reveal |
-| `initProgramFinder` | Degree-level chips + dependent Area/Specialization selects |
-| `initRevealAnimations` / `initTextReveal` | Fade-up on scroll; per-word masked heading reveal |
-| `initCountUp` | Stat numbers counting up |
-| `initParallax` / `initHeroParallax` / `initContentParallax` / `initCardScroll` | Scroll-driven motion (content band, hero red wall, hero + program-finder drift, carousel card slide-in) |
-| `initNavScroll` / `initMobileNav` | Sticky-nav shrink; hamburger panel |
-| `initMegaMenu` / `initMobileMenuTree` | Desktop dropdown positioning; the mobile panel's nested menus |
-| `initCtaVideos` | Background video in the CTA band — encode tier, lazy-load, pause offscreen |
-| `initFooterPartners` | Footer brand carousel — manual arrows, paging by a whole view |
+| Header + footer structure, nav JS, tokens | CU-Homepage-Test-v2 `0e61516` |
+| Header skin, all six bands, copy, imagery | measured/downloaded from live capella.edu |
 
-## Assets
+Copy is Capella's own published wording. Links are `#` — only the layout and nav
+behaviour are real.
 
-**All assets are committed under `public/assets/` and referenced as
-`/assets/…`.** They are not fetched from Figma at runtime — an earlier version
-of this project used Figma MCP asset URLs, which expire after ~7 days.
+## Fonts
 
-Two asset contracts are load-bearing and documented in `HANDOFF.md` §3 — read it
-before replacing them:
+Three things must all be right or the headings silently degrade:
 
-- **`hero-red.webp` + `hero-people.webp`** — the hero is split into two layers so
-  the red wall can parallax while the people stay still.
-- **`carousel-portrait-faculty.webp`** — a pre-cut transparent portrait sized to
-  the carousel card, and intentionally *taller* than the card because the figure
-  breaks out above its top edge.
-- **`wnba-capella-lockup*.webp`** — the partnership card's artwork. The logos,
-  the divider rule *and* the "official higher learning partner" line are all
-  baked into one image, so the `alt` text is the only accessible copy of that
-  line. Two crops (wide / stacked), picked by a `<picture>` `media` query.
+1. **Typekit** (`use.typekit.net/rrn6owv.css`) — provides `acumin-variable`.
+2. **Google Fonts** — Inter. Keep `1,700` in the `ital,wght` list or bold italic
+   falls back to regular weight.
+3. **`font-variation-settings: 'slnt' 0, 'wdth' 50, 'wght' 800`** on every display
+   heading — this is what makes them condensed.
 
-## Design source
+⚠️ The width axis is not optional. `acumin-variable` defaults to `wdth 100`, which
+renders the hero headline **420px instead of 232px** at 40px — about 80% too wide.
+Use the `.display` class in `main.css`, which applies family + variation together.
+Verified: our headline measures 232px, byte-identical to the live site's.
 
-- [Figma — Hi-fi Review](https://www.figma.com/design/6tdLZrCAiMSii7sMAUrRDs/Hi-fi---Review?node-id=5647-5140)
-  — the homepage overall.
-- [Figma — Card Update](https://www.figma.com/design/vkdlGCLzDrSK1crS3ZtT5A/Card-Update?node-id=6-194)
-  — the featured-story cards (v2 rebuilt these against this file). The WNBA
-  partnership card is
-  [`55-62`](https://www.figma.com/design/vkdlGCLzDrSK1crS3ZtT5A/Card-Update?node-id=55-62)
-  (desktop + mobile in one frame).
-- **Jake's page updates** —
-  [Figma — UI Elements for Homepage Proto](https://www.figma.com/design/h3IvZdQj2uH5bm7JPUD89a/UI-Elements-for-Homepage-Proto?node-id=50-21184)
-  — the nav dropdown and its activated state, button and chip states, the closing
-  CTA, and the mobile bottom bar / chat launcher.
+## Nav behaviour
 
-## Browser notes
+- **Desktop megamenus** open on **click**, one at a time. `Degrees & Programs` is
+  a three-level cascade (level → area → programs); the third level is generated
+  from the `MEGA_PROGRAMS` map in `js/nav.js`, not authored in markup.
+  The live ramp is dark panel → `#f5f5f5` areas column → white programs column,
+  and a row highlights in the colour of the column it opens.
+- **Mobile** is a stack of full-screen views sliding in from the right, each with
+  a `« Back`. The tree is **derived from the desktop megamenu DOM** at load, so
+  the two navs cannot drift — edit the markup and mobile follows.
+- **Scrolled state** changes colour only, never geometry: megamenus are positioned
+  from the bar's bottom edge when they open, so any height change here reopens a
+  gap under an open dropdown.
+- The mobile panel is reparented to `<body>` on init because it is
+  `position: fixed` and the scrolled header's `backdrop-filter` would otherwise
+  become its containing block and collapse it to a sliver.
 
-- Layout is mobile-first; the wide carousel layout takes over at `≥1024px` and
-  the desktop hero at `≥1200px`.
-- Every animation has a `prefers-reduced-motion: reduce` fallback.
+## Gotchas worth knowing
+
+- **Two hero images.** Desktop is a full-bleed `background-image` (1440×640
+  master) so the tan backdrop spans the whole width with the copy on top. Mobile
+  is a separate 640×432 `<img>` stacked above the copy. Treating the desktop hero
+  as "white panel + photo on the right" is the single thing that makes it read as
+  not-quite-right.
+- **Accreditor logos.** Use `accred-*.png` (full colour). The prototype's
+  `accr-*.svg` were white knockout artwork for a dark band — on this white band
+  they load fine, occupy layout, and are invisible.
+- **Don't lift the mobile nav panel above the action bar.** The panel has its own
+  red Apply/Request footer; ending it at `bottom: 56px` renders two identical red
+  bars. Its `z-index: 130` covers the bar's `120` instead.
+- **Sampling the live site:** capella.edu ships duplicate desktop/mobile copies of
+  several controls. The hidden one reports `border-radius: 0` and a different font
+  size. Sample the element with a non-zero bounding box, or use `elementFromPoint`.
+- **Browser-pane quirk:** while the preview pane is hidden,
+  `document.visibilityState === 'hidden'` and CSS transitions freeze at their
+  start value, so `transitionend` never fires. This looks exactly like an
+  animation bug and isn't one. Force a frame with a screenshot first.
+
+## Running it
+
+There is no Node on this machine, so `npm run dev` will not work as-is. Serve a
+copy with `public/assets` flattened to `/assets` (what Vite does at runtime):
+
+```bash
+D=/tmp/cu-bottomsheet-preview && rm -rf $D && mkdir -p $D && cp -R index.html css js $D/ && cp -R public/assets $D/assets && python3 -m http.server 4180 -d $D
+```
+
+⚠️ Editing source does **not** update that copy — re-run the command after edits
+or you will verify against a stale build.
+
+With Node installed:
+
+```bash
+npm install && npm run dev
+```
+
+## Next: the bottom sheet
+
+`<main>` ends with the accreditation band; the mobile-only fixed red action bar
+(`.action-bar`, "Apply now | Request info") is the surface the sheet is expected
+to open from. It's `position: fixed`, `z-index: 120`, 50px tall, and `<body>`
+carries a matching `padding-bottom` so the footer clears it.

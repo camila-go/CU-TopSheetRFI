@@ -1,0 +1,327 @@
+/* Footer layer — brand + social, link columns, legal/ownership block, and the
+   Strategic Education partner carousel. Lifted from CU-Homepage-Test-v2
+   (commit 0e61516). Requires base.css. */
+
+/* Footer */
+.footer {
+  background: var(--color-black);
+  padding: 128px 0 64px;
+}
+
+.footer__top {
+  display: flex;
+  align-items: flex-start;
+  gap: 128px;
+  margin-bottom: 64px;
+}
+
+.footer__brand {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  /* Separates the wordmark from the social row. */
+  gap: 24px;
+  flex-shrink: 0;
+  width: 194px;
+}
+
+.footer__logo {
+  width: 194px;
+  height: auto;
+  object-fit: contain;
+}
+
+.footer__social {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.footer__social a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.9;
+  transition: opacity 0.2s ease;
+}
+
+.footer__social img {
+  display: block;
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+.footer__social a:hover {
+  opacity: 1;
+}
+
+.footer__links {
+  display: flex;
+  flex: 1;
+  justify-content: space-between;
+  gap: 24px;
+  min-width: 0;
+}
+
+.footer__column {
+  flex: 0 1 208px;
+  min-width: 0;
+}
+
+/* Live capella.edu renders these UPPERCASE at 13px/#cdcdcd — the prototype had
+   them sentence-case at 15px. Measured 2026-08-12; see DESIGN.md. */
+.footer__column-heading {
+  margin: 0 0 16px;
+  font-size: 0.8125rem; /* 13px */
+  font-weight: 700;
+  line-height: 1.5;
+  text-transform: uppercase;
+  color: #cdcdcd;
+}
+
+.footer__column ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Live spec (measured 2026-08-12):
+     footer .nav-link         { font-size:14px; line-height:27px; opacity:.91; color:#CDCDCD }
+     footer .nav-link:hover   { text-decoration:underline }   ← colour does NOT change
+     footer .nav-link:active  { color:#c8c0b6 } */
+.footer__column a {
+  font-size: 0.875rem; /* 14px */
+  line-height: 27px;
+  opacity: 0.91;
+  color: #cdcdcd;
+  transition: color 0.2s ease;
+}
+
+/* ⚠️ Underline only. The prototype lightened these to white on hover; the live
+   site keeps #cdcdcd and just underlines. */
+.footer__column a:hover,
+.footer__column a:focus-visible {
+  color: #cdcdcd;
+  text-decoration: underline;
+}
+
+.footer__column a:active {
+  color: #c8c0b6;
+}
+
+.footer__bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.footer__copyright {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.footer__copyright p {
+  margin: 0;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--color-neutral-100);
+}
+
+.footer__ownership {
+  flex: 1;
+  min-width: 0;
+}
+
+.footer__rights {
+  flex-shrink: 0;
+  white-space: nowrap;
+  text-align: right;
+}
+
+.footer__divider {
+  width: 100%;
+  height: 1px;
+  margin: 0;
+  border: 0;
+  background: var(--color-neutral-200);
+  opacity: 0.35;
+}
+
+/* Partner carousel — `--per-view` drives the slide width, so the breakpoints
+   only have to change that one number. Live site: 6 up on desktop, 1 on mobile. */
+.footer__partners {
+  --per-view: 6;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.footer__partners-viewport {
+  flex: 1 1 auto;
+  overflow: hidden;
+}
+
+.footer__partners-track {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  transition: transform var(--duration-med) var(--ease-out-expo);
+}
+
+.footer__partners-item {
+  flex: 0 0 calc(100% / var(--per-view));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 12px;
+  min-width: 0;
+}
+
+/* Cap BOTH axes rather than pinning a height: the wordmarks range from 88 to
+   165 units wide at the same height, so a fixed height would push the widest
+   ones out of their slot. */
+.footer__partners-item img {
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 44px;
+  object-fit: contain;
+}
+
+.footer__partners-arrow {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--color-white);
+  cursor: pointer;
+  transition:
+    background var(--duration-fast) ease,
+    opacity var(--duration-fast) ease;
+}
+
+.footer__partners-arrow:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.footer__partners-arrow:focus-visible {
+  outline: 2px solid var(--color-white);
+  outline-offset: 2px;
+}
+
+/* Disabled rather than hidden, so the track keeps the same width and the logos
+   don't shift when you reach either end. */
+.footer__partners-arrow[disabled] {
+  opacity: 0.3;
+  cursor: default;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .footer__partners-track {
+      transition: none;
+  }
+}
+
+@media (max-width: 1280px) {
+  .footer__partners {
+      --per-view: 3;
+  }
+  /* Everything in the stacked footer hangs off the SAME left edge as the
+       copyright and the partner strip below it. Centring the brand and the link
+       grid here previously produced three different left edges in one footer
+       (logo 76px, columns 69px, copyright 0px at 375px wide). */
+  .footer__top {
+      flex-direction: column;
+      gap: 48px;
+      align-items: stretch;
+  }
+  .footer__brand {
+      width: auto;
+  }
+  /* Grid, not wrapping flex: with `flex-wrap` + `justify-content: center` the
+       4th column ("Legal") wrapped onto its own row and centred there, leaving it
+       floating under the gap between columns 1 and 2. Grid auto-placement drops
+       it into the first cell of the next row, so wrapped columns stay aligned
+       with the ones above them. */
+  .footer__links {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, 208px);
+      justify-content: start;
+      gap: 48px 24px;
+      width: 100%;
+  }
+  .footer__column {
+      min-width: 180px;
+  }
+}
+
+@media (max-width: 768px) {
+  /* One brand at a time on phones, as on the live site. */
+  .footer__partners {
+      --per-view: 1;
+  }
+  /* Phones centre the whole footer — brand, columns, copyright — matching the
+       live site. This deliberately overrides the flush-left treatment the ≤1280
+       block sets for tablet; the point of that rule was that every block share ONE
+       edge, and centring keeps that true. */
+  .footer__top,
+  .footer__brand {
+      align-items: center;
+  }
+  .footer__links {
+      justify-content: center;
+  }
+  .footer__column,
+  .footer__copyright {
+      text-align: center;
+  }
+  .footer__social {
+      justify-content: center;
+  }
+  .footer {
+      padding-top: 80px;
+  }
+  .footer__copyright {
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+  }
+  .footer__rights {
+      white-space: normal;
+      /* `inherit`, not `left` — the copyright is centred with the rest of the
+         footer on phones. */
+      text-align: inherit;
+  }
+}
+
+/* ⚠️ The footer's bottom padding must clear the chat button, not just the action
+   bar. The chat button is fixed to the VIEWPORT, so at the end of the page it
+   lands on whatever the footer's last row is — and that row is the partner
+   carousel, whose "Next brands" arrow sits at the content's right edge. Until
+   ~1250px the two collide and the arrow becomes unclickable, because the button
+   paints on top. 30 + 56 = 86px of button, so 104 leaves a real gap. */
+.footer {
+  padding-bottom: 104px;
+}
+
+@media (max-width: 1024px) {
+  /* Must clear the launcher, which tops out at 75 + 54 = 129px. */
+  .footer {
+      padding-bottom: 150px;
+  }
+}

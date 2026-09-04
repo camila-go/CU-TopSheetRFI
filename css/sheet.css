@@ -1,0 +1,550 @@
+/* Application sheet — bottom sheet on mobile, right-aligned modal on desktop.
+ *
+ * Anatomy follows the supplied design:
+ *   MOBILE  a sheet rising from the bottom, the previous context peeking behind
+ *           it; header with a dismiss X at the LEFT and the required title
+ *           centred; scrollable content; a docked final-action button; a drag
+ *           handle at the very bottom.
+ *   DESKTOP a full-height panel pinned to the RIGHT over a dimmed scrim, with the
+ *           title and the X on one header row.
+ *
+ * The same markup serves both — only the sheet's box and the header's layout
+ * change at the breakpoint.
+ */
+
+/* ---- Scrim ------------------------------------------------------------- */
+.sheet-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(33, 35, 34, 0.5);
+  opacity: 0;
+  transition: opacity var(--duration-med) ease;
+}
+
+.sheet-scrim[hidden] {
+  display: none;
+}
+
+.sheet-scrim.is-open {
+  opacity: 1;
+}
+
+/* ---- Sheet ------------------------------------------------------------- */
+.sheet {
+  position: fixed;
+  z-index: 210;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-white);
+  color: var(--color-uni-black);
+  /* Mobile: rise from the bottom, stopping short of the top so the previous
+     context stays visible behind it (per the anatomy's "Previous context"). */
+  left: 0;
+  right: 0;
+  bottom: 0;
+  /* ⚠️ Leaves a visible strip of the page behind the sheet. At 24px it read as
+     a full-screen takeover rather than a sheet; the anatomy's "Previous context"
+     band needs to be legible. max() keeps a floor on short viewports. */
+  top: max(96px, env(safe-area-inset-top, 0px) + 80px);
+  border-radius: 12px 12px 0 0;
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.2);
+  transform: translateY(100%);
+  transition: transform var(--duration-med) var(--ease-out-expo);
+}
+
+.sheet[hidden] {
+  display: none;
+}
+
+.sheet.is-open {
+  transform: translateY(0);
+}
+
+/* ---- Header ------------------------------------------------------------ */
+/* Three columns so the title is optically centred regardless of the X's width. */
+.sheet__header {
+  flex: 0 0 auto;
+  display: grid;
+  grid-template-columns: 44px 1fr 44px;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 15px;
+  border-bottom: 1px solid #d9d9d6;
+}
+
+.sheet__dismiss {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  color: var(--color-uni-black);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.sheet__dismiss:hover {
+  background: #f5f5f5;
+}
+
+.sheet__dismiss:focus-visible {
+  outline: 2px solid var(--color-uni-black);
+  outline-offset: 2px;
+}
+
+/* The Capella lockup replaces the per-step text title. The title itself stays in
+   the DOM, visually hidden, so the dialog still announces which step you are on
+   (`aria-labelledby` points at it) — the logo alone would announce nothing useful. */
+.sheet__logo {
+  justify-self: center;
+  width: 132px;
+  height: 28px;
+}
+
+/* ---- Scrollable content ----------------------------------------------- */
+.sheet__body {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  /* The sheet owns its scrolling; don't chain to the page behind it. */
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding: 24px 15px 8px;
+}
+
+/* ---- Docked action ---------------------------------------------------- */
+.sheet__footer {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 15px;
+  border-top: 1px solid #d9d9d6;
+  background: var(--color-white);
+}
+
+.sheet__actions {
+  display: flex;
+  gap: 12px;
+}
+
+.sheet__actions .sheet__action {
+  flex: 1 1 0;
+}
+
+/* The docked primary uses the site's own filled-button spec. */
+.sheet__action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 6.5px 15px;
+  border: 4px solid transparent;
+  border-radius: 7.5px;
+  background: var(--color-uni-red);
+  color: var(--color-white);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  font-weight: 700;
+  box-shadow: var(--shadow-btn);
+  cursor: pointer;
+  transition: background var(--duration-fast) ease;
+}
+
+.sheet__action:hover {
+  background: var(--color-red-hover);
+  box-shadow: var(--shadow-btn-hover);
+}
+
+.sheet__action:focus-visible {
+  outline: 4px solid var(--focus-ring-red);
+}
+
+.sheet__action[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ⚠️ `display: inline-flex` above beats the UA's `[hidden] { display: none }`,
+   so Back stayed visible on step 1 even with the attribute set. */
+.sheet__action[hidden] {
+  display: none;
+}
+
+.sheet__action--ghost {
+  background: none;
+  color: var(--color-uni-red);
+  box-shadow: none;
+}
+
+.sheet__action--ghost:hover {
+  background: #f5f5f5;
+  box-shadow: none;
+}
+
+/* Drag handle — the bar at the very bottom of the mobile anatomy. */
+.sheet__handle {
+  align-self: center;
+  width: 134px;
+  height: 5px;
+  margin-bottom: 4px;
+  border-radius: 999px;
+  background: var(--color-uni-black);
+}
+
+/* ---- Steps ------------------------------------------------------------- */
+.sheet__step[hidden] {
+  display: none;
+}
+
+.sheet__step-title {
+  margin: 0 0 12px;
+  font-family: var(--font-body);
+  font-size: 1.375rem; /* 22px */
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.sheet__step-sub {
+  margin: 0 0 24px;
+  font-size: var(--text-body);
+  line-height: 1.5;
+  color: #4f565b;
+}
+
+/* ⚠️ The floating label is positioned against this box, so the input must stay
+   the first in-flow child — `top: 0` is only the input's top edge because nothing
+   precedes it. The 40px bottom margin matches the live field rhythm (input
+   `margin: 10px 0 30px`) and also gives the next label the ~21px it rises into.
+   6px is the live gap between a failed input and its message. */
+.sheet__field {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0 0 40px;
+}
+
+/* Floating label — the live form's jvFloat pattern, reproduced from
+ * `.guideFieldWidget .jvFloat .placeHolder{,.active}`.
+ *
+ * The same string is BOTH the `<label>` and the input's `placeholder`, which is
+ * how jvFloat works: it reads the placeholder attribute and injects the label
+ * from it. So at rest the hint sits *inside* the field and the label is invisible
+ * at the field's top edge; once the field holds a value the label lifts onto the
+ * border, its white background and 1px 8px padding notching the 1px rule out
+ * from under it.
+ *
+ * ⚠️ It floats on VALUE, not focus. jvFloat binds `keyup blur change` and does
+ * `toggleClass('active', input.value !== '')` — focusing an empty field leaves
+ * the label down and the placeholder showing, which is what the live form does.
+ * Animating on focus would look tidier and be wrong.
+ */
+/* ⚠️ The offsets are expressed against the INPUT's top edge, measured on the live
+   form: at rest the label's centre sits 25px down (the middle of the 50px field,
+   right where the placeholder text is), and floated it sits 1px down — i.e.
+   centred on the 1px top border, which its white background notches out.
+   Live writes these as `top: 0` and `top: -14px` against a `display: inline`
+   wrapper whose box starts 15px below the input; here the field is a block, so
+   the same positions are 25px and 0. Copying live's literal numbers put the label
+   14px too high, clear of the border, which made the white background pointless.
+   25px is half the input's fixed 50px — not `top: 50%`, which would drift once an
+   error message grows the field. */
+.sheet__label {
+  position: absolute;
+  top: 25px;
+  left: 14px;
+  transform: translateY(-50%);
+  padding: 1px 8px;
+  background: var(--color-white);
+  color: #666666;
+  font-size: 0.75rem; /* 12px */
+  font-weight: 400;
+  white-space: nowrap;
+  opacity: 0;
+  transition: all 200ms;
+}
+
+.sheet__field.is-floating .sheet__label {
+  top: 0;
+  left: 5px;
+  z-index: 1;
+  opacity: 1;
+}
+
+/* ⚠️ One property diverges: live also sets `visibility: hidden` on the resting
+   label, which drops it out of the accessibility tree and leaves the field named
+   only by its `placeholder` — a weak accessible name. Opacity alone is pixel-wise
+   identical and keeps the name stable whether the label is up or down. */
+
+/* Live: `.guideFieldNode[data-disabled="true"] .jvFloat .placeHolder`. A disabled
+   field hides the label outright rather than fading it. */
+.sheet__field:has(.sheet__input:disabled) .sheet__label {
+  display: none;
+}
+
+/* Field states, taken from the live application theme's own rules
+   (`.guideContainerWrapperNode .guideFieldWidget input[type=…]`):
+     rest      1px #b4b4b4, radius 5px, padding 14px 16px, colour #212322
+     focus     border 2px #006b99, outline 0, padding 13px 15px
+     error     border 2px #e50000, text #e50000, padding 13px 15px
+     disabled  #f5f5f5 fill
+   ⚠️ These are NOT the hero select's values (1px #212322 / radius 10px) — the
+   application form is a different component with its own field style. */
+.sheet__input {
+  height: 50px;
+  padding: 14px 16px;
+  border: 1px solid #b4b4b4;
+  border-radius: 5px;
+  background: var(--color-white);
+  color: var(--color-uni-black);
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+}
+
+/* The placeholder carries the label text at rest, so its colour is the same #666
+   the floated label uses. */
+.sheet__input::placeholder {
+  color: #666666;
+}
+
+/* ⚠️ No hover state. The live theme has hover rules for buttons and for
+   checkbox/radio tiles, but none for text inputs — an earlier version darkened
+   the border on hover, which was invented. */
+
+/* ⚠️ Focus is a 2px #006b99 border with `outline: 0` — the AEM theme's blue,
+   which appears nowhere in the Capella palette but is genuinely what the
+   application uses. Not the black outline this had before. The padding drops by
+   1px so the 1px → 2px border doesn't shift the text or the box. */
+.sheet__input:focus {
+  border: 2px solid #006b99;
+  outline: 0;
+  padding: 13px 15px;
+}
+
+/* Live: `input[readonly='readonly'] { background-color: #f5f5f5; pointer-events: none }`.
+   ⚠️ Only the fill changes — the text stays #212322, not the softer grey this had
+   invented for it. */
+.sheet__input[readonly] {
+  background: #f5f5f5;
+  pointer-events: none;
+}
+
+/* ⚠️ A focused readonly field keeps the REST border, not the blue focus one, and
+   drops its text to #666. Without this the confirm steps' fields would light up
+   blue on a field the user can't edit. */
+.sheet__input[readonly]:focus {
+  border: 1px solid #b4b4b4;
+  padding: 14px 16px;
+  color: #666666;
+}
+
+/* Live sets the fill only here too; `cursor` is ours, since a disabled field the
+   user can still point at should say so. */
+.sheet__input:disabled {
+  background: #f5f5f5;
+  cursor: not-allowed;
+}
+
+/* Error. `aria-invalid` drives it so the visual and the accessible state cannot
+   drift apart. The 2px border replaces the 1px rest border and the padding drops
+   to compensate, so the box holds its size. The live rule also turns the field's
+   own text #e50000, not just its border. */
+.sheet__input[aria-invalid='true'],
+.sheet__input[aria-invalid='true']:focus {
+  border: 2px solid #e50000;
+  padding: 13px 15px;
+  color: #e50000;
+}
+
+.sheet__error {
+  display: none;
+  align-items: flex-start;
+  gap: 5px;
+  color: #e50000;
+  font-size: 0.875rem; /* 14px */
+  font-weight: 500;
+  line-height: 18px;
+}
+
+.sheet__field.is-invalid .sheet__error {
+  display: flex;
+}
+
+/* The live message leads with a Font Awesome warning glyph at 19px/#e50000.
+   Drawn here instead so the state doesn't depend on the icon kit loading. */
+.sheet__error::before {
+  content: '!';
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  margin-top: 1px;
+  border-radius: 50%;
+  background: #e50000;
+  color: var(--color-white);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* ⚠️ The floating label stays #666 in the error state. Nothing in the live theme
+   recolours `.placeHolder` under `.validation-failure` — only the input's border
+   and text turn red. Turning the label red too was invented. */
+
+.sheet__check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.9375rem;
+}
+
+/* Live checkbox: 26×26, `appearance: none`, 1px #b4b4b4. The browser default is
+   ~13px and visibly smaller than the form's other controls. */
+.sheet__check input[type='checkbox'] {
+  flex: 0 0 auto;
+  width: 26px;
+  height: 26px;
+  margin: 0;
+  appearance: none;
+  -webkit-appearance: none;
+  border: 1px solid #b4b4b4;
+  border-radius: 4px;
+  background: var(--color-white);
+  cursor: pointer;
+}
+
+.sheet__check input[type='checkbox']:hover {
+  border-color: var(--color-uni-black);
+}
+
+.sheet__check input[type='checkbox']:checked {
+  border-color: var(--color-uni-red);
+  background-color: var(--color-uni-red);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M2 8.5l4 4 8-9' fill='none' stroke='white' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 18px;
+}
+
+.sheet__check input[type='checkbox']:focus-visible {
+  outline: 2px solid var(--color-uni-black);
+  outline-offset: 2px;
+}
+
+.sheet__hints {
+  margin: 0 0 20px;
+  padding-left: 20px;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: #4f565b;
+}
+
+.sheet__fine {
+  margin: 0;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: #696f74;
+}
+
+/* The step-1 "Log In" link — the only anchor in the sheet.
+ *
+ * ⚠️ Live's own link hover inside this form is `#006b99`, the AEM theme's blue
+ * (`.guideContainerWrapperNode a:hover { color: #006b99; text-decoration:
+ * underline }`). Red is a deliberate divergence: it puts the one interactive word
+ * in the fine print into the Capella brand colour rather than an Adobe default.
+ *
+ * ⚠️ The underline is on the REST state, not just hover. `base.css` sets
+ * `a { color: inherit; text-decoration: none }`, so this link was rendering
+ * identical to the grey copy around it — nothing marked it as a link. A
+ * hover-only affordance would not fix that: this is a bottom sheet, so most of
+ * its life is on touch, where hover never fires at all. */
+.sheet__fine a {
+  color: inherit;
+  text-decoration: underline;
+  transition: color var(--duration-fast) ease;
+}
+
+.sheet__fine a:hover {
+  color: var(--color-uni-red);
+}
+
+/* Keyboard users get the same colour change, not only the ring. */
+.sheet__fine a:focus-visible {
+  color: var(--color-uni-red);
+  outline: 2px solid var(--color-uni-red);
+  outline-offset: 2px;
+}
+
+.sheet__note {
+  margin: 0 0 20px;
+  padding: 15px;
+  border-radius: 10px;
+  background: #f5f5f5;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+/* Interstitial steps (welcome, account setup) centre their message. */
+.sheet__step--message {
+  text-align: center;
+  padding-top: 24px;
+}
+
+/* ---- Desktop: right-aligned modal ------------------------------------- */
+@media (min-width: 768px) {
+  .sheet {
+    top: 0;
+    bottom: 0;
+    left: auto;
+    right: 0;
+    width: min(520px, 100%);
+    border-radius: 0;
+    box-shadow: -4px 0 24px rgba(0, 0, 0, 0.2);
+    /* Slides in from the right rather than up from the bottom. */
+    transform: translateX(100%);
+  }
+
+  .sheet.is-open {
+    transform: translateX(0);
+  }
+
+  /* Title left, X right — one row, as in the desktop reference. */
+  .sheet__header {
+    grid-template-columns: 1fr 44px;
+    padding: 16px 24px;
+  }
+
+  /* Logo left, X right on desktop — the reverse of the mobile arrangement. */
+  .sheet__logo {
+    order: -1;
+    justify-self: start;
+  }
+
+  .sheet__body {
+    padding: 32px 24px 8px;
+  }
+
+  .sheet__footer {
+    padding: 16px 24px;
+  }
+
+  /* The drag handle is a touch affordance; it has no meaning on desktop. */
+  .sheet__handle {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sheet,
+  .sheet-scrim {
+    transition: none;
+  }
+}

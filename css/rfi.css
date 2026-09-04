@@ -1,0 +1,408 @@
+/* ---------------------------------------------------------------------------
+   RFI top sheet — "Request more information", opened from the Request
+   information CTAs.
+
+   Design: FormBottomSheetModal Figma, section `formTopSheetModal` (34:8023);
+   the desktop form is the `TopSheetModalFormTextColorVersions` component set
+   (1:8550, variant `size=4column, step=1`). The Figma `step=1..10` variants are
+   prototype interaction frames (focus / open dropdown / filled), NOT separate
+   pages — the form itself is two steps, as its "STEP 1 of 2" label says.
+
+   Geometry deliberately mirrors css/sheet.css (the Apply flow): same scrim,
+   z-indices, breakpoint and slide direction, so the two sheets read as one
+   family. Only the form internals below are new.
+
+   Figma variables resolve to existing tokens rather than new ones:
+     button-color-fill-primary-enabled #c10016 → --color-uni-red
+     (hover)                           #74000d → --color-red-hover
+     theme-color/outline/neutral       #adadad → --color-neutral-200
+     button/button-border-radius       32      → --radius-pill
+     gl-border-radius-xs               2       → --rfi-radius-input
+     gl-size-4xl                       48      → --rfi-field-h
+--------------------------------------------------------------------------- */
+
+.rfi {
+  --rfi-pad: 24px;
+  --rfi-field-h: 48px;
+  --rfi-radius-input: 2px;
+  --rfi-gap: 16px;
+  --rfi-gap-sm: 12px;
+  --rfi-valid: #1c7c3f;
+}
+
+/* ---- Scrim ------------------------------------------------------------- */
+/* Matches .sheet-scrim so both sheets dim the page identically. */
+.rfi__scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(33, 35, 34, 0.5);
+  opacity: 0;
+  transition: opacity var(--duration-med) ease;
+}
+
+.rfi__scrim[hidden] {
+  display: none;
+}
+
+.rfi.is-open .rfi__scrim {
+  opacity: 1;
+}
+
+/* ---- Panel ------------------------------------------------------------- */
+/* Mobile: rises from the bottom, stopping short of the top so the page behind
+   stays visible — the same "Previous context" band the Apply sheet leaves. */
+.rfi__panel {
+  position: fixed;
+  z-index: 210;
+  display: flex;
+  flex-direction: column;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: max(96px, env(safe-area-inset-top, 0px) + 80px);
+  background: var(--color-white);
+  color: var(--color-uni-black);
+  border-radius: 12px 12px 0 0;
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.2);
+  transform: translateY(100%);
+  transition: transform var(--duration-med) var(--ease-out-expo);
+}
+
+.rfi__panel[hidden] {
+  display: none;
+}
+
+.rfi.is-open .rfi__panel {
+  transform: translateY(0);
+}
+
+/* ---- Header ------------------------------------------------------------ */
+.rfi__header {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: flex-end;
+  padding: 10px 15px;
+}
+
+.rfi__dismiss {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  color: var(--color-uni-black);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.rfi__dismiss:hover {
+  background: #f5f5f5;
+}
+
+.rfi__dismiss:focus-visible {
+  outline: 2px solid var(--color-uni-black);
+  outline-offset: 2px;
+}
+
+/* ---- Scrollable content ------------------------------------------------ */
+.rfi__body {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: 0 var(--rfi-pad) var(--rfi-pad);
+  font-family: var(--font-body);
+}
+
+.rfi__title {
+  margin: 0 0 var(--rfi-gap);
+  font-family: var(--font-body);
+  font-size: 1.375rem; /* 22px — headings/h4 */
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.rfi__intro {
+  margin: 0 0 var(--rfi-gap);
+  font-size: var(--text-body);
+  line-height: 1.5;
+}
+
+.rfi__step-label {
+  margin: 0 0 var(--rfi-gap-sm);
+  font-size: var(--text-body);
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.rfi__required {
+  margin: 0 0 var(--rfi-gap);
+  font-size: var(--text-ui-sm);
+  font-style: italic;
+  line-height: 1.5;
+}
+
+.rfi__question {
+  margin: 0 0 var(--rfi-gap-sm);
+  font-size: var(--text-body);
+  line-height: 1.5;
+}
+
+/* ---- Fields ------------------------------------------------------------ */
+.rfi__fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rfi-gap-sm);
+}
+
+.rfi__field {
+  position: relative;
+}
+
+.rfi__select,
+.rfi__input {
+  width: 100%;
+  height: var(--rfi-field-h);
+  padding: 0 var(--rfi-gap);
+  border: 1px solid var(--color-neutral-200);
+  border-radius: var(--rfi-radius-input);
+  background: var(--color-white);
+  color: var(--color-uni-black);
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  line-height: 1.5;
+}
+
+/* Native arrow replaced so the caret matches the Figma dropdown glyph. */
+.rfi__select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23212322' stroke-width='1.5'%3E%3Cpath d='M3 6l5 5 5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right var(--rfi-gap) center;
+  background-size: 16px;
+  padding-right: 44px;
+  cursor: pointer;
+}
+
+.rfi__select:focus-visible,
+.rfi__input:focus-visible {
+  outline: 2px solid var(--focus-ring-red);
+  outline-offset: -1px;
+  border-color: var(--color-uni-red);
+}
+
+.rfi__select:disabled {
+  background-color: var(--color-light-gray);
+  color: var(--color-boulder-600);
+  cursor: not-allowed;
+}
+
+/* Step 2 stacks a small field name above the value, per variant step=10. */
+.rfi__field--stacked .rfi__input {
+  height: auto;
+  padding: 22px var(--rfi-gap) 8px;
+}
+
+.rfi__field--stacked .rfi__label {
+  position: absolute;
+  top: 6px;
+  left: var(--rfi-gap);
+  font-size: 0.625rem; /* 10px */
+  line-height: 1.5;
+  color: var(--color-boulder-600);
+  pointer-events: none;
+}
+
+.rfi__check {
+  position: absolute;
+  top: 50%;
+  right: var(--rfi-gap);
+  transform: translateY(-50%);
+  color: var(--rfi-valid);
+  font-size: 16px;
+  line-height: 1;
+  opacity: 0;
+  transition: opacity var(--duration-fast) ease;
+}
+
+.rfi__field.is-valid .rfi__check {
+  opacity: 1;
+}
+
+.rfi__field.is-valid .rfi__input {
+  padding-right: 44px;
+}
+
+.rfi__field.is-invalid .rfi__select,
+.rfi__field.is-invalid .rfi__input {
+  border-color: var(--color-uni-red);
+}
+
+.rfi__error {
+  display: none;
+  margin: 4px 0 0;
+  color: var(--color-uni-red);
+  font-size: var(--text-ui-sm);
+  line-height: 1.5;
+}
+
+.rfi__field.is-invalid .rfi__error {
+  display: block;
+}
+
+/* ---- Radio groups ------------------------------------------------------ */
+/* Spacing lives on the fieldset: a <legend> does not take margin reliably. */
+.rfi__radios-wrap {
+  margin: 24px 0 0;
+  padding: 0;
+  border: 0;
+}
+
+.rfi__radios {
+  display: flex;
+  gap: 32px;
+}
+
+.rfi__radios.is-invalid {
+  outline: 1px solid var(--color-uni-red);
+  outline-offset: 8px;
+  border-radius: var(--rfi-radius-input);
+}
+
+.rfi__radio {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--rfi-gap-sm);
+  font-size: var(--text-body);
+  line-height: 1.5;
+  cursor: pointer;
+}
+
+.rfi__radio input {
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  accent-color: var(--color-uni-black);
+  cursor: pointer;
+}
+
+/* ---- Legal ------------------------------------------------------------- */
+.rfi__legal {
+  margin: var(--rfi-gap) 0;
+  font-size: var(--text-ui-sm);
+  font-style: italic;
+  line-height: 1.5;
+}
+
+.rfi__legal a {
+  color: var(--color-uni-red);
+  text-decoration: underline;
+}
+
+/* ---- Buttons ----------------------------------------------------------- */
+.rfi__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rfi-gap-sm);
+  margin-top: var(--rfi-gap);
+}
+
+.rfi__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--rfi-gap-sm);
+  min-height: 56px;
+  padding: 0 var(--rfi-gap);
+  border: 1px solid transparent;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  font-weight: 700;
+  line-height: 1.5;
+  cursor: pointer;
+  transition:
+    background var(--duration-fast) ease,
+    color var(--duration-fast) ease,
+    box-shadow var(--duration-fast) ease;
+}
+
+/* Red fill + 1px border + elevation, as on the live Apply button. */
+.rfi__btn--primary {
+  border-color: var(--color-red-border);
+  background: var(--color-uni-red);
+  color: var(--color-white);
+  box-shadow: var(--shadow-btn);
+}
+
+.rfi__btn--primary:hover {
+  background: var(--color-red-hover);
+  box-shadow: var(--shadow-btn-hover);
+}
+
+.rfi__btn--secondary {
+  border-color: var(--color-uni-red);
+  background: var(--color-white);
+  color: var(--color-uni-red);
+}
+
+.rfi__btn--secondary:hover {
+  background: var(--color-light-gray);
+}
+
+.rfi__btn:focus-visible {
+  outline: 2px solid var(--color-uni-black);
+  outline-offset: 2px;
+}
+
+/* ---- Steps ------------------------------------------------------------- */
+.rfi__step[hidden] {
+  display: none;
+}
+
+.rfi__success {
+  padding: 32px 0;
+}
+
+.rfi__success p {
+  font-size: var(--text-body);
+  line-height: 1.5;
+}
+
+/* ---- Desktop ----------------------------------------------------------- */
+/* Right-aligned modal, matching .sheet and the Figma `DT` frames. */
+@media (min-width: 768px) {
+  .rfi {
+    --rfi-pad: 36px; /* gl-grid-standard-margin-med */
+  }
+
+  .rfi__panel {
+    top: 0;
+    bottom: 0;
+    left: auto;
+    right: 0;
+    width: min(520px, 100%);
+    border-radius: 0;
+    box-shadow: -4px 0 24px rgba(0, 0, 0, 0.2);
+    transform: translateX(100%);
+  }
+
+  .rfi.is-open .rfi__panel {
+    transform: translateX(0);
+  }
+
+  .rfi__header {
+    padding: 16px 24px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rfi__scrim,
+  .rfi__panel {
+    transition: none;
+  }
+}

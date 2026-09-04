@@ -1,0 +1,935 @@
+/* Homepage bands, built to match www.capella.edu (measured 2026-08-12 — see
+ * DESIGN.md). Requires base.css for the reset and .page-container.
+ *
+ * The live content column is 1140px centred; .page-container from the prototype
+ * is 1440 + a viewport gutter, so it is narrowed here rather than in base.css so
+ * the header/footer keep their own widths.
+ */
+
+.page-container {
+  width: min(1140px, 100% - 30px);
+}
+
+/* ⚠️ Display type needs BOTH the family and the width axis. `acumin-variable`
+   defaults to wdth 100, which renders ~80% wider than the live site — the
+   headline stops fitting its column. See the token comment in tokens.css. */
+.display {
+  font-family: var(--font-display);
+  font-variation-settings: var(--display-variation);
+  font-weight: 800;
+  text-transform: uppercase;
+  line-height: var(--leading-display);
+  letter-spacing: 0;
+}
+
+/* Shared red controls -------------------------------------------------- */
+.btn-red,
+.chip-red {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-uni-red);
+  color: var(--color-white);
+  font-family: var(--font-body);
+  font-weight: 700;
+  text-align: center;
+  transition: background var(--duration-fast) ease;
+}
+
+.btn-red {
+  padding: 12px 24px;
+  border-radius: 6px;
+  font-size: var(--text-body);
+}
+
+/* The 4px transparent border is real, not decoration: it is what makes the live
+   chip 132px wide rather than 123px, and it is where the focus ring lands. */
+.chip-red {
+  padding: 6.5px 15px;
+  border: 4px solid transparent;
+  border-radius: 7.5px;
+  font-size: 1.125rem; /* 18px */
+  line-height: 1.5; /* 27px */
+  min-height: 48px;
+}
+
+/* `primary-fill-btn` states, read out of the live theme: the fill deepens to
+   #74000d on hover/active (NOT #b62025), and the drop shadow deepens with it.
+   Focus is a 4px #e68c96 ring rather than a dark outline. */
+.btn-red,
+.chip-red {
+  box-shadow: var(--shadow-btn);
+}
+
+.btn-red:hover,
+.chip-red:hover {
+  background: var(--color-red-hover);
+  box-shadow: var(--shadow-btn-hover);
+}
+
+.btn-red:active,
+.chip-red:active {
+  background: var(--color-red-hover);
+  box-shadow: var(--shadow-btn-active);
+}
+
+.btn-red:focus-visible,
+.chip-red:focus-visible {
+  outline: 4px solid var(--focus-ring-red);
+  outline-offset: 0;
+}
+
+/* 1 ── Hero ------------------------------------------------------------
+ * Desktop: one row, copy in a 1140 column on the left and the photo bleeding
+ * off the right edge. The photo is absolutely positioned rather than a grid
+ * cell so it can extend past the content column to the viewport edge, which is
+ * what the live hero does.
+ */
+/* ⚠️ Two different hero images, exactly as the live site ships them:
+   - DESKTOP is a full-bleed BACKGROUND image (1440x640 master, 3x asset). The
+     tan studio backdrop therefore runs the whole width and the copy sits on top
+     of it — it is not a white panel with a photo bolted to the right.
+   - MOBILE is a separate 640x432 <img> stacked above the copy.
+   Getting this wrong is what makes the hero read as "close but not right". */
+.hero {
+  position: relative;
+  /* The live hero is 562px tall at desktop. min-height, not height, so longer
+     copy grows the band instead of spilling over the artwork. */
+  min-height: 562px;
+  background-color: var(--color-white);
+  background-image: url('/assets/hero-wide.jpg');
+  background-size: cover;
+  background-position: 0 0;
+  background-repeat: no-repeat;
+  color: var(--color-uni-black);
+  overflow: hidden;
+}
+
+.hero__inner {
+  width: min(1140px, 100% - 30px);
+  margin-inline: auto;
+  padding-inline: 15px;
+}
+
+/* ⚠️ 82.5px above, 60px below — not a symmetric 60. Live nests a `.py-4`
+   (22.5px) inside the content wrapper's 60px, so the h1's top sits 82.5px below
+   the band's top edge. With a symmetric 60 the open hero came out 653px instead
+   of 677. The closed hero is unaffected: its content is shorter than the 562px
+   min-height either way. */
+.hero__content {
+  position: relative;
+  z-index: 1;
+  max-width: 585px;
+  padding-block: 82.5px 60px;
+}
+
+.hero__title {
+  /* Live gap h1→body is 22.5px, not 24. */
+  margin: 0 0 22.5px;
+  font-size: var(--text-h1-live);
+  color: var(--color-uni-black);
+}
+
+.hero__body {
+  /* Live gap body→"Find your program" is 30px. */
+  margin: 0 0 30px;
+  max-width: 585px;
+  font-size: var(--text-body-lg);
+  line-height: 1.5;
+}
+
+/* Live: the label TEXT starts at x=192.5 (the clipboard icon sits left of it),
+   and the row sits 15px above the chips. */
+.hero__find {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 0 0 15px;
+  font-size: var(--text-body);
+  font-weight: 700;
+}
+
+.hero__find-icon {
+  font-size: 1.125rem;
+}
+
+.hero__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* The chosen degree goes to #3a0007 — a third, much darker red used only for
+   this selected state (rest #c10016, hover #74000d). */
+.chip-red.is-selected,
+.chip-red.is-selected:hover {
+  background: #3a0007;
+  color: var(--color-white);
+}
+
+/* Program finder, revealed a step at a time by js/hero.js.
+   ⚠️ The two selects sit SIDE BY SIDE, not stacked — live is
+   `display: flex; gap: 30px; align-items: flex-end` with each label above its
+   own select (measured: selects at x=165 and x=407, i.e. 212px wide + 30px gap,
+   both with top=647 and labels at top=606). */
+.hero__finder {
+  display: flex;
+  align-items: flex-end;
+  gap: 30px;
+  /* Live gap from the chips' bottom to the label's top is 32.5px. */
+  margin-top: 32.5px;
+  /* ⚠️ The row is WIDER than the copy column and overflows it on purpose: live's
+     form wrapper is 750px against a 645px column, with the CTA ending at x=912
+     while the column ends at 795. Without `max-content` the 585px column squeezes
+     the CTA to ~100px and its label wraps to three lines (102px tall). */
+  width: max-content;
+  max-width: none;
+}
+
+/* ⚠️ Live has 120px between the selects' bottom edge and the bottom of the hero
+   band — 22.5px field margin + 15px finder padding + 22.5px inner padding + the
+   60px content padding. Ours only had the 60px, so the selects sat ~84px too
+   close to the fold. Added as a class js/hero.js toggles, NOT unconditionally:
+   the finder is empty when closed and this would otherwise push the closed
+   hero past its 562px. */
+.hero__finder.is-open {
+  padding-bottom: 60px;
+}
+
+/* Live label→select offset is 40.5px: a 22px-tall label box plus an 18.5px gap.
+   ⚠️ The label's line-height is ~1.22 (22px at 18px), NOT 1.5 — at 1.5 the box is
+   27px and the label sits 5px too low against its select. */
+.hero__field {
+  display: flex;
+  flex-direction: column;
+  gap: 18.5px;
+  margin: 0;
+}
+
+/* `display: flex` above would otherwise defeat the `hidden` attribute. */
+.hero__field[hidden] {
+  display: none;
+}
+
+.hero__label {
+  font-size: 1.125rem; /* 18px */
+  line-height: 22px;
+  color: var(--color-uni-black);
+}
+
+/* ⚠️ `appearance: none` plus our own chevron. The live select hides the native
+   arrow and overlays a 12×8 SVG at `right: 24px`, vertically centred — the
+   browser default arrow is thinner, sits closer to the edge, and is the most
+   obvious tell that this isn't the real control. Live paints it as an absolutely
+   positioned sibling `<svg>`; a background image at the same coordinates is
+   visually identical and saves an element.
+ *
+ * ⚠️ The labels are longer than the box. At the live 212px width the text area is
+ * only 152px, and **3 of 9 areas of study and 17 specialisations overrun it** —
+ * the worst, "MSN NP - Master of Science in Nursing, Nurse Practitioner", by
+ * 304px. Even the "Select area of study" placeholder overruns by 4px. So the
+ * overflow rule is not a detail: `text-overflow: ellipsis` with `white-space:
+ * nowrap` is what the live component uses, and without it the UA default
+ * (`clip` / `pre`) hard-truncates mid-word hard against the chevron.
+ *
+ * ⚠️ `padding-right` is 36px, not live's 34px — the one deliberate 2px deviation.
+ * The chevron spans 24px–36px in from the right edge, so a 34px gutter puts the
+ * text area's edge 2px INSIDE the chevron and the ellipsis can print over its left
+ * tip. 36px lands the text edge exactly on the chevron's left edge instead. The
+ * truncation point moves by 2px, which is invisible; the collision doesn't. */
+.hero__select {
+  width: 212px;
+  height: 50px;
+  padding: 14px 36px 14px 24px;
+  border: 1px solid var(--color-uni-black);
+  border-radius: 10px;
+  appearance: none;
+  -webkit-appearance: none;
+  background-color: transparent;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M6 7.4L0 1.4L1.4 0L6 4.6L10.6 0L12 1.4L6 7.4Z' fill='%23212322'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 24px center;
+  background-size: 12px 8px;
+  color: var(--color-uni-black);
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  font-weight: 700;
+  /* Live: `text-overflow: ellipsis; white-space: nowrap`. `overflow: hidden` is
+     ours and belt-and-braces: the spec requires a non-visible overflow for
+     `text-overflow` to apply, but Chrome special-cases form controls and keeps
+     reporting `overflow: visible` on a <select> either way. */
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.hero__select:focus-visible {
+  outline: 2px solid var(--color-uni-black);
+  outline-offset: 2px;
+}
+
+/* Step 3 CTA. Same button family as the hero chips — `padding: 6.5px 15px`,
+   `border: 4px solid transparent`, `radius 7.5px`, Inter-Bold 18px, the standard
+   drop shadow — so it inherits the same hover/active reds via .chip-red's rules
+   being mirrored here. Content-width and inline as the row's third item at
+   desktop; full-width below the selects at mobile. */
+.hero__cta {
+  /* Never let the label wrap — it is what made the button 102px tall. */
+  flex-shrink: 0;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  /* 4px, not 15: live wraps the 23px arrow in a 45x27 slot, so most of the
+     visual breathing room comes from the slot, not the gap. Reproducing the slot
+     is what makes the button 264px wide rather than 252. */
+  gap: 4px;
+  min-height: 48px;
+  padding: 6.5px 15px;
+  border: 4px solid transparent;
+  border-radius: 7.5px;
+  background: var(--color-uni-red);
+  color: var(--color-white);
+  font-family: var(--font-body);
+  font-size: 1.125rem; /* 18px */
+  font-weight: 700;
+  line-height: 1.5;
+  text-align: center;
+  box-shadow: var(--shadow-btn);
+  transition: background var(--duration-fast) ease;
+}
+
+.hero__cta[hidden] {
+  display: none;
+}
+
+/* The arrow ships as a #262625 SVG; live inverts it to white on the red fill. */
+.hero__cta-icon {
+  /* 45x27 slot holding the 23px arrow, matching live's icon span. */
+  width: 45px;
+  height: 27px;
+  object-fit: contain;
+  filter: var(--filter-icon-white);
+}
+
+.hero__cta:hover {
+  background: var(--color-red-hover);
+  box-shadow: var(--shadow-btn-hover);
+}
+
+.hero__cta:active {
+  background: var(--color-red-hover);
+  box-shadow: var(--shadow-btn-active);
+}
+
+.hero__cta:focus-visible {
+  outline: 4px solid var(--focus-ring-red);
+  outline-offset: 0;
+}
+
+/* Mobile-only: the desktop artwork is the background image above. */
+.hero__image {
+  display: none;
+}
+
+/* 2 ── Learning formats ------------------------------------------------ */
+.formats {
+  background: var(--color-uni-black);
+  color: var(--color-white);
+  padding-block: 48px 56px;
+}
+
+.formats__title {
+  margin: 0 auto 40px;
+  max-width: 900px;
+  font-size: var(--text-h2);
+  text-align: center;
+  color: var(--color-white);
+}
+
+.formats__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 30px;
+}
+
+/* 10px rounded corners on the live site, with the terminal link row picking up
+   the bottom two via its own `border-radius: 0 0 10px 10px`. */
+.format-card {
+  display: flex;
+  flex-direction: column;
+  padding: 30px;
+  border-radius: 10px;
+  background: var(--color-card-grey);
+  color: var(--color-uni-black);
+}
+
+.format-card__logo {
+  width: 180px;
+  height: auto;
+  margin-bottom: 20px;
+}
+
+.format-card__title {
+  margin: 0 0 12px;
+  font-size: var(--text-body);
+  font-weight: 700;
+}
+
+.format-card__body {
+  margin: 0 0 24px;
+  font-size: 0.9375rem; /* 15px */
+  line-height: 1.6;
+}
+
+/* ⚠️ The terminal row is WHITE, not a transparent strip showing the card's grey
+   through it — that white band against the #f0f0ef body is a big part of what
+   makes the live card read correctly. 1px #d9d9d6 rule above it, and it owns the
+   card's bottom two corners. Negative margins cancel the card's 30px padding so
+   it bleeds to the edges. */
+.format-card__link {
+  margin: auto -30px -30px;
+  padding: 15px 30px;
+  border-top: 1px solid #d9d9d6;
+  border-radius: 0 0 10px 10px;
+  background: var(--color-white);
+  color: var(--color-uni-red);
+  /* Live: 16px / 24px with -0.06px tracking. */
+  font-size: var(--text-body);
+  line-height: 1.5;
+  letter-spacing: -0.06px;
+  font-weight: 700;
+  text-align: center;
+}
+
+/* ⚠️ Not an underline — `.image-text-cta__link:hover` fills the whole row red
+   with white text:
+     { background-color:#C10016; color:#FFF; border-color:#C10016;
+       text-decoration:none } */
+.format-card__link:hover,
+.format-card__link:focus-visible {
+  background: var(--color-uni-red);
+  border-top-color: var(--color-uni-red);
+  color: var(--color-white);
+  text-decoration: none;
+}
+
+/* 3 ── Stats + popular programs ---------------------------------------- */
+.stats {
+  background: var(--color-uni-black);
+  color: var(--color-white);
+  padding-block: 8px 64px;
+}
+
+.stats__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 30px;
+  align-items: start;
+}
+
+.stats__title {
+  margin: 0 0 32px;
+  font-size: var(--text-h2);
+  color: var(--color-white);
+}
+
+.stats__list {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ⚠️ The stat numbers are Inter BOLD, not the condensed display face. Live:
+   `Inter-Bold, 60px, line-height 72px` (i.e. 1.2), not uppercase. I had them on
+   the `.display` class at 64px with `wdth 50`, which made them far narrower than
+   the live figures. Caught by the computed-style sweep. */
+.stat__value {
+  font-family: var(--font-body);
+  font-size: 3.75rem; /* 60px */
+  font-weight: 700;
+  line-height: 1.2; /* 72px */
+  color: var(--color-white);
+}
+
+/* Live: Inter-Bold 22px / 26.4px — not 16px. */
+.stat__label {
+  margin: 0;
+  font-size: 1.375rem; /* 22px */
+  font-weight: 700;
+  line-height: 1.2; /* 26.4px */
+}
+
+.stats__source {
+  margin: 32px 0 0;
+  font-size: var(--text-body-sm);
+  color: var(--color-neutral-100);
+}
+
+/* Live page-level override: `.bg-parsys__color-wrapper … a { color:#fff;
+   font-weight:400 }` — white, regular weight, no underline. */
+.stats__source a {
+  color: var(--color-white);
+  font-weight: 400;
+  text-decoration: none;
+}
+
+.stats__source a:hover {
+  text-decoration: underline;
+}
+
+.programs__title {
+  margin: 0 0 20px;
+  font-size: var(--text-h5);
+  font-weight: 700;
+}
+
+.programs {
+  margin: 0 0 24px;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* `secondary-fill-btn` on the live site. */
+.program-card {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 16px;
+  /* Live padding is 18.5px 30px, plus a 4px transparent border all round —
+     together those make the card 90px tall rather than 73px. The border is the
+     site's standard button hit/focus allowance (the hero chips have it too). */
+  padding: 18.5px 30px;
+  border: 4px solid transparent;
+  background: var(--color-card-blue);
+  color: var(--color-uni-black);
+  box-shadow: var(--shadow-btn);
+  transition:
+    background var(--duration-fast) ease,
+    color var(--duration-fast) ease,
+    box-shadow var(--duration-fast) ease;
+}
+
+/* ⚠️ Not a brightness filter — the live hover swaps to a slate fill with WHITE
+   text and inverts the icon:
+     .secondary-fill-btn:hover { background-color:#5F777A; color:#FFF; … }
+     .secondary-fill-btn:hover .iconImage { filter: invert(100%) … } */
+.program-card:hover {
+  background: var(--color-blue-hover);
+  color: var(--color-white);
+  box-shadow: var(--shadow-btn-hover);
+}
+
+.program-card:hover .program-card__icon {
+  filter: var(--filter-icon-white);
+}
+
+.program-card:focus-visible {
+  outline: 4px solid var(--focus-ring-blue);
+  outline-offset: 0;
+}
+
+.program-card__icon {
+  width: 45px;
+  height: 45px;
+  transition: filter var(--duration-fast) ease;
+}
+
+.program-card__text {
+  display: flex;
+  flex-direction: column;
+}
+
+.program-card__level {
+  font-size: var(--text-body-sm);
+  font-weight: 700;
+}
+
+.program-card__name {
+  font-size: var(--text-body);
+  font-weight: 700;
+}
+
+.program-card__arrow {
+  font-size: 1.25rem;
+}
+
+.programs__cta {
+  display: block;
+  width: fit-content;
+  margin-inline: auto;
+}
+
+/* 4 ── Make your move -------------------------------------------------- */
+.move {
+  background: var(--color-uni-red);
+  color: var(--color-white);
+  padding-block: 40px 48px;
+}
+
+/* The live tiles sit in a narrow centred block (~613px), not the full content
+   column, so this section gets its own width rather than .page-container. */
+.move__inner {
+  width: min(613px, 100% - 30px);
+  margin-inline: auto;
+}
+
+.move__title {
+  margin: 0 0 30px;
+  font-size: var(--text-h2);
+  text-align: center;
+  color: var(--color-white);
+}
+
+.move__tiles {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* ⚠️ These tiles are `white-fill-btn`, but capella.edu ships a PAGE-LEVEL inline
+   <style> block that overrides the theme's version of that class with
+   !important, and the page-level rules are what you actually see:
+     .quick-links .white-fill-btn        { border:0 !important; color:#212322 !important }
+     .quick-links .white-fill-btn:hover  { background-color:#212322; color:#fff !important }
+     .quick-links .white-fill-btn .iconImage       { filter:none !important; transition:all .2s ease-in-out }
+     .quick-links .white-fill-btn:hover .iconImage { filter:invert(1) !important }
+   So: DARK label on white at rest (not red), and the hover fill is NEAR-BLACK
+   (not red). I originally took the theme's generic .white-fill-btn declarations
+   at face value — red label, red hover fill — which is wrong on this page.
+   Lesson: check the computed value on the live element, and read the inline
+   <style> blocks, not just the linked stylesheets. */
+.move-tile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 54px;
+  height: 100%;
+  padding: 10px 20px;
+  border: 0;
+  border-radius: 4px;
+  background: var(--color-white);
+  color: var(--color-uni-black);
+  font-size: 0.9375rem; /* 15px */
+  font-weight: 700;
+  box-shadow: var(--shadow-btn);
+  transition:
+    background var(--duration-fast) ease,
+    color var(--duration-fast) ease,
+    box-shadow var(--duration-fast) ease;
+}
+
+/* Dark at rest — the icons are already the _UniBlack artwork, so no filter. */
+.move-tile__icon {
+  flex-shrink: 0;
+  width: 23px;
+  height: 23px;
+  transition: filter 0.2s ease-in-out;
+}
+
+.move-tile:hover {
+  background: var(--color-uni-black);
+  color: var(--color-white);
+  box-shadow: var(--shadow-btn-hover);
+}
+
+.move-tile:hover .move-tile__icon {
+  filter: invert(1);
+}
+
+/* No :active override — the live page only styles :hover here, and :hover still
+   applies while the tile is pressed, so it stays dark rather than flashing the
+   theme's leftover red. */
+.move-tile:focus-visible {
+  outline: 2px solid var(--color-uni-black);
+  outline-offset: 2px;
+}
+
+/* 5 ── Accreditation --------------------------------------------------- */
+.accred {
+  background: var(--color-white);
+  color: var(--color-uni-black);
+  padding-block: 48px 56px;
+  text-align: center;
+}
+
+.accred__logos {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  margin: 0 0 32px;
+  padding: 0;
+  list-style: none;
+}
+
+/* The live site renders all four at 215px wide regardless of their differing
+   intrinsic sizes, so constrain width and let height follow. */
+.accred__logos img {
+  width: 215px;
+  height: auto;
+  object-fit: contain;
+}
+
+.accred__lead {
+  margin: 0 0 8px;
+  font-size: var(--text-body);
+  font-weight: 700;
+}
+
+.accred__sub {
+  margin: 0 auto 12px;
+  max-width: 640px;
+  font-size: var(--text-body);
+  font-weight: 700;
+}
+
+.accred__link {
+  margin: 0 0 24px;
+}
+
+.accred__link a {
+  color: var(--color-uni-red);
+  font-weight: 700;
+}
+
+.accred__link a:hover {
+  text-decoration: underline;
+}
+
+.accred__fine {
+  margin: 0 auto 12px;
+  max-width: 780px;
+  font-size: 0.8125rem; /* 13px */
+  font-style: italic;
+  line-height: 1.6;
+}
+
+.accred__fine a {
+  color: var(--color-uni-red);
+  text-decoration: underline;
+}
+
+/* 6 ── Mobile fixed action bar ----------------------------------------- *
+ * Hidden on desktop. Below 769px it pins to the bottom of the viewport, so the
+ * page also needs bottom padding or the footer's last row sits under it.
+ */
+.action-bar {
+  display: none;
+}
+
+/* 7 ── Responsive ------------------------------------------------------
+ *
+ * ⚠️ Breakpoints are capella.edu's (Bootstrap 4), not round numbers. Measured
+ * on the live site across 1440 / 992 / 768 / 576 / 375:
+ *
+ *   ≤991  nav collapses to a 41px bar + hamburger; hero swaps the full-bleed
+ *         background artwork for the stacked <img>; h1 72 → 40px;
+ *         stat value 60 → 24px
+ *   ≤767  utility bar 61 → 72px; stats/programmes stack; move tiles → 1 col;
+ *         stat label 22 → 16px
+ *   ≤575  format cards → 1 col; the fixed red action bar appears (50px)
+ *
+ * I originally used 1024/768, which collapsed the two-column bands a full
+ * breakpoint too early — at 768 the live site still shows format cards, stats
+ * and move tiles two-up. The 991 figure is confirmed by the live page's own
+ * inline `@media screen and (max-width: 991px)` hero override.
+ */
+@media (max-width: 991px) {
+  /* Hero stacks: the 640x432 photo first, full-bleed, then the copy underneath.
+     The desktop background artwork is dropped so it can't show through behind
+     the text — the live page does exactly this at the same width. */
+  .hero {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    background-image: none;
+  }
+
+  .hero__image {
+    display: block;
+    order: -1;
+    width: 100%;
+    max-width: none;
+    height: auto;
+    aspect-ratio: 640 / 432;
+    object-fit: cover;
+  }
+
+  /* ⚠️ Drop the inner 15px padding here. `.hero__inner` is already
+     `min(1140px, 100% - 30px)`, so at 375 it is 345 wide sitting at x=15 — the
+     extra padding pushed all the hero copy to x=30 while live keeps it on the
+     15px gutter. At desktop the padding IS needed (150 container + 15 = 165). */
+  .hero__inner {
+    padding-inline: 0;
+  }
+
+  /* Live mobile: 15px wrapper padding + the nested 22.5px = 37.5px above the h1
+     and below the finder (measured 75px below the last select = 37.5 + 37.5). */
+  .hero__content {
+    max-width: none;
+    padding-block: 37.5px;
+  }
+
+  .hero__finder.is-open {
+    padding-bottom: 37.5px;
+  }
+
+  .hero__title {
+    font-size: var(--text-h1-live-mobile); /* 40px */
+  }
+
+  .hero__body {
+    font-size: var(--text-body);
+  }
+
+  /* Live drops both hard here — value 60 → 24px, label 22 → 16px (measured at
+     768, where the label is already 16px). */
+  .stat__value {
+    font-size: 1.5rem; /* 24px */
+    line-height: 1.2;
+  }
+
+  .stat__label {
+    font-size: var(--text-body); /* 16px */
+  }
+
+  .formats__title,
+  .stats__title,
+  .move__title {
+    font-size: 2rem; /* 32px */
+  }
+
+  .accred__logos {
+    gap: 28px;
+  }
+
+  .accred__logos img {
+    width: 170px;
+  }
+}
+
+@media (max-width: 767px) {
+  .stats__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .move__tiles {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* The two hero selects can't sit side by side in 375px. Live stacks them with
+     22.5px between fields, and the CTA sits 22.5px below the last select. */
+  .hero__finder {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 22.5px;
+    /* Undo the desktop `max-content`: stacked fields fill the column. */
+    width: auto;
+  }
+
+  /* Full-width at mobile, as on the live site. */
+  .hero__cta {
+    width: 100%;
+  }
+
+  .hero__select {
+    width: 100%;
+    max-width: 345px;
+  }
+}
+
+@media (max-width: 575px) {
+  .formats__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* Live 2×2 grid at mobile: equal-width chips, 18px across and 12px down
+     (the desktop row uses a uniform 12px). */
+  .hero__chips {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 18px;
+    row-gap: 12px;
+  }
+
+  /* ⚠️ The grid sizes the <li>, but `.chip-red` is `inline-flex` and so stays
+     content-width inside its cell — the chips came out 131/115/113/132 with a
+     ragged 50px visual gap instead of an even 2×2. Stretch them to fill. */
+  .hero__chips > li {
+    display: flex;
+  }
+
+  .hero__chips .chip-red {
+    width: 100%;
+  }
+
+  .accred__logos img {
+    width: 140px;
+  }
+
+  /* The fixed bar covers the bottom of the page, so reserve its height. */
+  body {
+    padding-bottom: 50px;
+  }
+
+  /* Live bar is 50px, not 56px. */
+  .action-bar {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 120;
+    height: 50px;
+    background: var(--color-uni-red);
+  }
+
+  .action-bar__btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-white);
+    font-size: var(--text-body);
+    font-weight: 400;
+  }
+
+  /* A single hairline rule between the two halves, as on the live bar. */
+  .action-bar__btn + .action-bar__btn {
+    border-left: 1px solid rgba(255, 255, 255, 0.6);
+  }
+
+  .action-bar__btn:active {
+    background: var(--color-red-border);
+  }
+
+  /* ⚠️ This was the one interactive component on the page with no focus style at
+     all (WCAG 2.4.7). Inset rather than outset: the bar is flush to the viewport
+     edges, so an outward ring would be clipped on three sides. */
+  .action-bar__btn:focus-visible {
+    outline: 3px solid var(--color-white);
+    outline-offset: -5px;
+  }
+
+  /* ⚠️ Do NOT lift the mobile nav panel to clear this bar. The panel carries its
+     own red "Apply now | Request info" footer, so ending it above the action bar
+     renders TWO identical red bars stacked. Left at `bottom: 0` (nav.css), the
+     panel's z-index 130 simply covers the bar's 120 while the menu is open. */
+}

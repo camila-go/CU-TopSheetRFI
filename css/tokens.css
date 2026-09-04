@@ -20,10 +20,56 @@
   --color-program-hover-eyebrow: #767676;
   --color-program-hover-name: #505050;
 
-  /* Figma display: Acumin Pro Extra Condensed (maps to Acumin VF styles in dev mode) */
-  --font-display: 'acumin-pro-extra-condensed', sans-serif;
+  /* Sampled off the LIVE capella.edu, 2026-08-12 — see DESIGN.md. The two card
+     colours are close to but NOT the same as --color-boulder-50 / --color-stat-blue
+     above, which came from the dark-theme prototype. Use these for live-matching
+     work and leave the originals alone so the prototype's own sections still read
+     correctly if any get ported over. */
+  --color-card-grey: #f0f0ef; /* FlexPath / GuidedPath cards */
+  --color-card-blue: #a9c5c9; /* popular-programme cards */
+  --color-red-border: #b62025; /* the 1px border on the red Apply button */
+
+  /* Interaction states, read out of the live theme stylesheet
+     (etc.clientlibs/visitorcenter/.../vcrefresh.min.css) rather than guessed.
+     ⚠️ capella.edu uses THREE different reds and they are not interchangeable:
+       #c10016  rest fill
+       #b62025  the nav hover/active underline, and darker link text
+       #74000d  hover/active fill on filled buttons
+       #8a0010  hover on the megamenu's "Find your program" CTA only
+     Its root font-size is 15px, so the theme's rem values convert as
+     0.1333rem=2px, 0.2rem=3px, 0.2667rem=4px, 0.3333rem=5px, 1.3333rem=20px. */
+  --color-red-hover: #74000d;
+  --color-red-cta-hover: #8a0010;
+  --color-blue-hover: #5f777a; /* secondary-fill-btn hover */
+  --focus-ring-red: #e68c96;
+  --focus-ring-blue: #94b7bb;
+  --focus-ring-grey: #d0d1d2;
+
+  --shadow-btn: 0 5px 20px rgba(0, 0, 0, 0.1);
+  --shadow-btn-hover: 0 5px 20px rgba(0, 0, 0, 0.2);
+  --shadow-btn-active: 0 5px 20px rgba(0, 0, 0, 0.25);
+
+  /* The live site recolours its black icon SVGs with filters rather than
+     shipping variants. Copied verbatim so the icons match. */
+  --filter-icon-white: invert(100%) sepia(100%) saturate(1%) hue-rotate(120deg) brightness(103%) contrast(102%);
+  --filter-icon-red: invert(9%) sepia(94%) saturate(6555%) hue-rotate(349deg) brightness(83%) contrast(104%);
+
+  /* ⚠️ Display type is Acumin VARIABLE, not the static extra-condensed family.
+     capella.edu renders every display heading with
+     `font-variation-settings: "slnt" 0, "wdth" 50, "wght" 800` — the width axis
+     at 50 is what makes the headlines condensed. Setting only `font-weight: 800`
+     leaves wdth at 100 and the heading comes out far too wide. Always apply
+     --display-variation alongside this family (the `.display` class below does).
+     `acumin-variable` ships in the same Typekit kit as the static faces. */
+  --font-display: 'acumin-variable', 'acumin-pro-extra-condensed', sans-serif;
+  --display-variation: 'slnt' 0, 'wdth' 50, 'wght' 800;
   --font-acumin-pro: 'acumin-pro', sans-serif;
   --font-body: 'Inter', system-ui, sans-serif;
+
+  /* Live display sizes: h1 72px desktop / 40px mobile, h2 48px, line-height 0.9 */
+  --text-h1-live: 4.5rem; /* 72px */
+  --text-h1-live-mobile: 2.5rem; /* 40px */
+  --leading-display: 0.9;
 
   --weight-display-black: 800;
   --weight-display-semibold: 600;

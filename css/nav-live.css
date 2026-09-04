@@ -1,0 +1,625 @@
+/* Live capella.edu header skin.
+ *
+ * Loaded AFTER nav.css and deliberately kept separate: nav.css is the v2
+ * prototype's dark pill-shaped skin, and every behaviour in js/nav.js was
+ * verified against it. This file only re-paints the header to match the live
+ * site — no geometry that the megamenu positioning depends on, and no structural
+ * changes. If you ever want the prototype look back, drop this one <link>.
+ *
+ * Every value here was measured off www.capella.edu on 2026-08-12; see DESIGN.md.
+ */
+
+/* The live content column is 1140px centred, not the prototype's 1440 + gutter. */
+.utility-bar__inner {
+  width: min(1140px, 100% - 30px);
+  margin-inline: auto;
+  padding-inline: 15px;
+}
+
+/* ⚠️ `.main-nav__bar` is nested INSIDE `.main-nav__wrapper`, which already
+   carries `.page-container` (narrowed to 1140 in main.css). Giving the bar its
+   own `min(1140px, 100% - 30px)` narrows it a second time — the logo lands at
+   x=180 instead of the live 165 and the bar comes out 1110 wide. Let the wrapper
+   own the width; the bar only adds the 15px inner padding. */
+.main-nav__bar {
+  width: 100%;
+  padding-inline: 15px;
+}
+
+/* ---- Utility bar: 61px, dark, content right-aligned -------------------- */
+.utility-bar {
+  height: 61px;
+  background: var(--color-uni-black);
+}
+
+.utility-bar__inner {
+  gap: 30px;
+}
+
+.utility-bar__link {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--color-white);
+  /* The prototype gave these a hover pill; the live links are plain. */
+  padding: 0;
+  border-radius: 0;
+}
+
+.utility-bar__link:hover,
+.utility-bar__link:focus-visible {
+  background: none;
+  text-decoration: underline;
+}
+
+/* "Request information" is an OUTLINED button here, not the prototype's
+   full-height red block bleeding to the bar's right edge. All three items sit
+   together as one right-aligned group, in the order
+   Request information → phone → Log in. */
+.utility-bar__cta {
+  order: -1;
+  display: inline-flex;
+  align-items: center;
+  height: 41px;
+  padding: 8.5px 15px;
+  border: 2px solid var(--color-white);
+  border-radius: 7.5px;
+  background: none;
+  color: var(--color-white);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.utility-bar__inner {
+  justify-content: flex-end;
+}
+
+/* ⚠️ This is `white-outline-btn` on the live site and it does NOT invert to a
+   white fill with dark text — it only washes to 10% white and keeps white text.
+   Live: `:hover { background-color: rgba(255,255,255,.1) }`,
+         `:active { rgba(255,255,255,.2) }`, `:focus { outline: 2px solid #fff }`. */
+.utility-bar__cta:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--color-white);
+}
+
+.utility-bar__cta:active {
+  background: rgba(255, 255, 255, 0.2);
+  color: var(--color-white);
+}
+
+.utility-bar__cta:focus-visible {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--color-white);
+  outline: 2px solid var(--color-white);
+  outline-offset: 2px;
+}
+
+/* The live bar shows the full label at every width. */
+.utility-bar__cta-full {
+  display: inline;
+}
+
+.utility-bar__cta-short {
+  display: none;
+}
+
+/* ---- Nav bar: 79px, WHITE, square ------------------------------------- */
+/* ⚠️ The live white bar carries a soft drop shadow at REST, not only when
+   scrolled: `box-shadow: 0 4px 4px rgba(138,141,143,0.4)`. Without it the bar
+   and the hero below it read as one flat surface. */
+.main-nav {
+  top: 61px; /* sits under the taller utility bar */
+  background: var(--color-white);
+  box-shadow: 0 4px 4px rgba(138, 141, 143, 0.4);
+}
+
+.main-nav__bar {
+  min-height: 79px;
+  padding-block: 0;
+  border-radius: 0;
+  background: var(--color-white);
+}
+
+/* ⚠️ The prototype's scrolled state washes the bar with a translucent dark and
+   a backdrop-filter. On a white bar that reads as grey mud, so the live skin
+   keeps the bar white and only adds a hairline. Colour only — never geometry,
+   or open megamenus get a gap under them (see nav.css). */
+.main-nav--scrolled {
+  background: var(--color-white);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: 0 4px 4px rgba(138, 141, 143, 0.4);
+}
+
+.main-nav__logo {
+  gap: 0;
+  padding-left: 0;
+}
+
+.main-nav__logo-lockup {
+  width: 153px;
+  height: 32px;
+}
+
+@media (max-width: 767px) {
+  .main-nav__logo-lockup {
+    width: 130px;
+    height: 27px;
+  }
+}
+
+/* Nav links: dark text on white, and the indicator is a 4px bottom border that
+   fills the whole 79px bar height rather than a pill. */
+.main-nav__item > a {
+  display: flex;
+  align-items: center;
+  height: 79px;
+  padding: 22.5px 30px;
+  border-radius: 0;
+  border-bottom: 4px solid transparent;
+  color: var(--color-uni-black);
+  font-size: 15px;
+  line-height: 30px;
+  font-weight: 400;
+  text-align: center;
+}
+
+/* ⚠️ The underline is #b62025, NOT the #c10016 rest red. Live rule:
+   `.nav-link:hover .brand-underline { border-bottom: .2rem solid #b62025 }`
+   — .2rem at the site's 15px root is 3px, not 4px.
+ *
+ * ⚠️ SPECIFICITY: nav.css paints the open/current trigger with the prototype's
+ * grey pill (`--nav-pill-current`, #5e6361) using
+ *     .main-nav__item > a[aria-expanded='true']:hover   → (0,3,0)
+ *     .main-nav__item > a[aria-current='page']:hover     → (0,3,0)
+ * A plain `.main-nav__item > a:hover` override is only (0,2,0) and LOSES, so a
+ * trigger that is both open and hovered showed a grey block on the white bar —
+ * capella.edu never fills the trigger (its theme forces
+ * `.nav-item > .nav-link:hover { background: 0 0 !important }`). Every state
+ * below is therefore spelled out at matching specificity. Don't collapse these
+ * back into one short selector. */
+.main-nav__item > a:hover,
+.main-nav__item > a:active,
+.main-nav__item > a[aria-expanded='true'],
+.main-nav__item > a[aria-expanded='true']:hover,
+.main-nav__item > a[aria-current='page'],
+.main-nav__item > a[aria-current='page']:hover {
+  background: none;
+  transform: none;
+  text-decoration: none;
+}
+
+.main-nav__item > a:hover,
+.main-nav__item > a[aria-expanded='true'],
+.main-nav__item > a[aria-expanded='true']:hover,
+.main-nav__item > a[aria-current='page'],
+.main-nav__item > a[aria-current='page']:hover {
+  border-bottom-width: 3px;
+  border-bottom-color: var(--color-red-border);
+}
+
+.main-nav__item > a:focus-visible {
+  outline: 2px solid var(--color-uni-black);
+  outline-offset: -4px;
+}
+
+.main-nav__links {
+  gap: 0; /* the 30px padding on each link already sets the rhythm */
+}
+
+/* Apply now: filled red, 6px radius, 120×32 (NOT the prototype's white pill —
+   `.btn--md` from base.css would otherwise make it 48px tall). */
+.main-nav__apply {
+  /* ⚠️ `min-height` too, not just `height`: the markup also carries `.btn--md`,
+     whose `min-height: 48px` otherwise wins and leaves the button 48px tall. */
+  height: 32px;
+  min-height: 32px;
+  min-width: 120px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 6px;
+  background: var(--color-uni-red);
+  color: var(--color-white);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+/* `primary-fill-btn` on the live site: rest carries a soft drop shadow, hover
+   deepens the fill to #74000d (NOT #b62025) and the shadow with it. */
+.main-nav__apply {
+  box-shadow: var(--shadow-btn);
+}
+
+.main-nav__apply:hover {
+  background: var(--color-red-hover);
+  color: var(--color-white);
+  box-shadow: var(--shadow-btn-hover);
+}
+
+.main-nav__apply:active {
+  background: var(--color-red-hover);
+  box-shadow: var(--shadow-btn-active);
+}
+
+.main-nav__apply:focus-visible {
+  background: var(--color-uni-red);
+  color: var(--color-white);
+  outline: 4px solid var(--focus-ring-red);
+  outline-offset: 0;
+  box-shadow: var(--shadow-btn);
+}
+
+/* ---- Megamenus: dark panel, LIGHT columns ------------------------------
+ *
+ * The live Degrees menu keeps the prototype's "surface ramp" idea — a row
+ * highlights in the colour of the column it opens — but the ramp runs the other
+ * way: the panel and levels rail stay #212322 while the areas column is #f5f5f5
+ * with dark text, and the active level row takes that same light fill.
+ *
+ * nav.css sets `color: var(--menu-text)` (white) per column, so each column that
+ * flips to a light fill has to flip its text too, hence the per-column rules
+ * rather than a token swap.
+ *
+ * ⚠️ Only the Degrees megamenu could be sampled on the live site — the three
+ * grouped-list menus are Angular-rendered and never painted on a synthetic
+ * click. They follow the same ramp here; verify against the live site if exact
+ * parity on those matters.
+ */
+/* ⚠️ NO red top border. Both live panels compute `border-top: 0px` despite
+   carrying `border-top border-brand-red` classes. The red bar you see above an
+   open panel is the TRIGGER's own 3px #b62025 underline, which sits flush on the
+   panel's top edge — not a border on the panel. Adding one here doubles it up
+   and makes it span the panel's full width instead of the trigger's. */
+.megamenu {
+  border-top: 0;
+  box-shadow: 0 7.5px 15px rgba(0, 0, 0, 0.176);
+}
+
+/* The live split panel paints its own #212322 (its `dark-bg` class) rather than
+   relying on the columns to cover it, so any sub-pixel gap between columns can't
+   show the page through. */
+.megamenu--split {
+  background: var(--menu-surface-1);
+}
+
+.megamenu__col--areas {
+  background: #f5f5f5;
+  color: var(--color-uni-black);
+}
+
+/* The third level is one more step along a LIGHT ramp, so it goes to white
+   rather than the prototype's #454545. */
+.megamenu__col--programs {
+  background: var(--color-white);
+  color: var(--color-uni-black);
+}
+
+/* Active level row: the areas-column fill, dark text, red left edge. */
+.megamenu__level.is-active {
+  background: #f5f5f5;
+  color: var(--color-uni-black);
+}
+
+/* ⚠️ Hovering a level row gets the SAME full light treatment as the active row —
+   light fill, dark text, red left edge, bold, red chevron. I originally made this
+   a subtle white wash on the theory that a full fill would read as "selected";
+   the live theme disagrees:
+     .nav-link-heading.level-1:hover {
+       font-family: Inter-Bold; color: #212322;
+       border-left-color: #C10016; background-color: #f5f5f5 }
+     .nav-link-heading.level-1:hover .icon-caret-right { color: #C10016 } */
+.megamenu__level:hover {
+  background: #f5f5f5;
+  color: var(--color-uni-black);
+  border-left-color: var(--color-uni-red);
+  font-weight: 700;
+}
+
+.megamenu__level:hover .megamenu__chev,
+.megamenu__level.is-active .megamenu__chev {
+  color: var(--color-uni-red);
+}
+
+/* Headings and chevrons sit on the light columns now, so they must be dark. */
+.megamenu__col--areas .megamenu__panel-title,
+.megamenu__col--areas .megamenu__programs-title,
+.megamenu__col--programs .megamenu__panel-title,
+.megamenu__col--programs .megamenu__programs-title,
+.megamenu__col--areas .megamenu__chev,
+.megamenu__col--programs .megamenu__chev {
+  color: var(--color-uni-black);
+}
+
+/* Rows in the light columns go to a WHITE fill with near-black text, per
+   `.dropdown-menu.level1-dd .nav-link:hover { background-color:#FFF; color:#111 }`
+   — not a translucent darkening. */
+.megamenu__col--areas .megamenu__area-list a:hover,
+.megamenu__col--areas .megamenu__area-list a[aria-current],
+.megamenu__col--programs .megamenu__area-list a:hover {
+  background: var(--color-white);
+  color: #111;
+  text-decoration: none;
+}
+
+.megamenu__col--areas .megamenu__area-list a:focus-visible,
+.megamenu__col--programs .megamenu__area-list a:focus-visible {
+  outline: 2px solid var(--color-uni-black);
+}
+
+/* ---- Grouped-list menus (Experience / Financing / Admissions) ----------
+ * ⚠️ These panels are LIGHT on the live site, not dark. I originally assumed
+ * they followed the Degrees menu's dark panel because a synthetic click never
+ * rendered them (they are Angular-driven). Forcing `display: block` on the
+ * live panel finally exposed them:
+ *     .dropdown-menu.level1-dd.gray-bg  → background #f5f5f5
+ *     rows                              → #111 at 16px
+ *     hover (`.level1-dd .nav-link:hover`) → white fill, #111 text
+ * Same light treatment as the Degrees menu's areas column.
+ */
+.megamenu--list {
+  background: #f5f5f5;
+  color: var(--color-uni-black);
+}
+
+.megamenu--list .megamenu__group-title,
+.megamenu--list .megamenu__group-title a {
+  color: var(--color-uni-black);
+  font-weight: 700;
+}
+
+.megamenu--list .megamenu__area-list a {
+  color: #111;
+  font-size: var(--text-body);
+}
+
+.megamenu--list .megamenu__area-list a:hover,
+.megamenu--list .megamenu__group-title a:hover {
+  background: var(--color-white);
+  color: #111;
+  text-decoration: none;
+}
+
+.megamenu--list .megamenu__area-list a:focus-visible,
+.megamenu--list .megamenu__group-title a:focus-visible {
+  outline: 2px solid var(--color-uni-black);
+}
+
+/* The megamenu's terminal CTA has its OWN hover red — #8a0010, not #74000d. */
+.megamenu__cta:hover,
+.megamenu__cta:focus-visible {
+  background: var(--color-red-cta-hover);
+  color: var(--color-white);
+  text-decoration: none;
+  box-shadow: none;
+}
+
+/* ---- Hamburger and mobile panel on a white bar ------------------------ */
+.main-nav__menu-btn {
+  border-color: transparent;
+}
+
+.main-nav__menu-icon,
+.main-nav__menu-icon::before,
+.main-nav__menu-icon::after {
+  background: var(--color-uni-black);
+}
+
+.main-nav__menu-btn:hover,
+.main-nav__menu-btn[aria-expanded='true'] {
+  background: rgba(33, 35, 34, 0.08);
+  border-color: transparent;
+}
+
+.main-nav__menu-btn:active {
+  background: rgba(33, 35, 34, 0.16);
+}
+
+.main-nav__menu-btn:focus-visible {
+  outline: 2px solid var(--color-uni-black);
+  outline-offset: 2px;
+}
+
+/* ⚠️ nav.css collapses the desktop nav at ≤1024 (the prototype's breakpoint).
+   capella.edu holds the full desktop nav down to 992 and collapses at ≤991 —
+   confirmed by the live page's own inline `@media (max-width: 991px)`. This
+   window puts the desktop nav back for 992–1024, which nav.css would otherwise
+   have hidden. */
+@media (min-width: 992px) and (max-width: 1024px) {
+  .main-nav__links {
+    display: flex;
+  }
+
+  .main-nav__apply {
+    display: inline-flex;
+  }
+
+  .main-nav__menu-btn {
+    display: none;
+  }
+
+  .main-nav__bar {
+    min-height: 79px;
+    border-radius: 0;
+  }
+}
+
+@media (max-width: 991px) {
+  /* Collapsed header: still a 61px utility bar here — it only grows to 72px
+     below 768. */
+  .main-nav {
+    top: 61px;
+    background: var(--color-white);
+  }
+
+  .main-nav__bar {
+    min-height: 41px;
+    border-radius: 0;
+  }
+
+  /* ⚠️ The bar is 41px on the live site, so the hamburger cannot be the
+     prototype's 44px square or it sets the bar's height instead. Live measures
+     45 × 40 with a 3.75px radius and NO fill in any state — including when open,
+     where the prototype puts a grey circle behind the X. */
+  .main-nav__menu-btn,
+  .main-nav__menu-btn:hover,
+  .main-nav__menu-btn[aria-expanded='true'] {
+    width: 45px;
+    height: 40px;
+    border-radius: 3.75px;
+    background: none;
+    border-color: transparent;
+  }
+
+  .main-nav__menu-btn:active {
+    background: rgba(33, 35, 34, 0.08);
+  }
+
+  /* The megamenus are hidden once the mobile view stack takes over, so the
+     desktop link geometry above must not leak in and inflate the bar. */
+  .main-nav__item > a {
+    height: auto;
+  }
+}
+
+@media (max-width: 767px) {
+  /* Live grows the utility bar to 72px only below 768. */
+  .utility-bar {
+    height: 72px;
+  }
+
+  .utility-bar__inner {
+    justify-content: flex-start;
+    gap: 10px;
+  }
+
+  .main-nav {
+    top: 72px;
+  }
+}
+
+@media (max-width: 767px) {
+  .utility-bar {
+    position: sticky;
+    top: 0;
+    height: 72px;
+  }
+
+  /* ⚠️ nav.css's own 768px block sets `.utility-bar__link:first-child { order: 2 }`
+     to push the phone number after "Log in" — that was for the prototype's
+     layout. The live order is Request information → phone → Log in, so reset it
+     and let document order stand. */
+  .utility-bar__link:first-child {
+    order: 0;
+  }
+
+  /* All three have to survive on one 72px row at 375px, so nothing may wrap. */
+  .utility-bar__link,
+  .utility-bar__cta {
+    white-space: nowrap;
+  }
+
+  .utility-bar__link {
+    font-size: 12px;
+  }
+
+  .utility-bar__cta {
+    order: -1;
+    height: 34px;
+    padding: 6px 10px;
+    border-width: 1.5px;
+    font-size: 11px;
+  }
+
+  .main-nav {
+    top: 72px;
+    padding-block: 0;
+    background: var(--color-white);
+  }
+}
+
+/* ---- Mobile nav: WHITE, not the prototype's dark surface ----------------
+ *
+ * ⚠️ The whole mobile menu is light on capella.edu. The prototype's version is
+ * dark (#212322 panel, white rows, grey chevrons), which is the single biggest
+ * reason it "looks different". Measured on the live site at 375:
+ *
+ *   panel        background #fff, border-top 5px #c10016
+ *                (note: the desktop megamenus carry the same
+ *                `border-top border-brand-red` classes but compute to 0 there —
+ *                the 5px rule is only real at mobile)
+ *   root rows    Inter BOLD 16px #212322, 71px tall (20px block padding),
+ *                1px #d9d9d6 rule, x=15
+ *   deeper rows  Inter REGULAR 16px, 55px tall (15px block padding)
+ *   chevron      #c10016, right-aligned
+ *   « Back       #c10016, 12px, regular weight
+ *   heading      #212322 regular 16px with a 1px #d9d9d6 rule under it
+ *                (shown from level 3 down; level 2 has none)
+ *   footer       red Apply now | Request info — already correct
+ *
+ * The view-stack STRUCTURE was already right (slide-in panels over the parent,
+ * "« Back" to pop, headings from level 3) — only the skin was wrong.
+ */
+@media (max-width: 991px) {
+  .main-nav__mobile-panel {
+    background: var(--color-white);
+    border-top: 5px solid var(--color-uni-red);
+  }
+
+  /* ⚠️ The 15px gutter lives on the VIEW, not the row. Live insets the row
+     element itself (x=15, 345 wide) so its bottom rule stops short of the panel
+     edges — with the padding on the row instead, the rule runs edge to edge. */
+  .mobile-menu__view {
+    background: var(--color-white);
+    padding: 0 15px 24px;
+  }
+
+  .mobile-menu__row {
+    min-height: 55px;
+    padding: 15px 0;
+    border-bottom: 1px solid #d9d9d6;
+    color: var(--color-uni-black);
+    font-size: var(--text-body);
+    font-weight: 400;
+  }
+
+  /* Only the four top-level rows are bold and taller (71px vs 55px).
+     ⚠️ `background: none` is required: nav.css gives these a #262626 fill
+     (`--menu-row-mobile`) for the prototype's dark panel. On the white panel that
+     leaves dark blocks with dark text on them — invisible rows. */
+  .mobile-menu__row--strong {
+    min-height: 71px;
+    padding-block: 20px;
+    font-weight: 700;
+    background: none;
+  }
+
+  .mobile-menu__row:hover,
+  .mobile-menu__row:active {
+    background: #f5f5f5;
+    transform: none;
+  }
+
+  .mobile-menu__chev {
+    color: var(--color-uni-red);
+  }
+
+  .mobile-menu__back {
+    padding: 12px 0 4px;
+    color: var(--color-uni-red);
+    font-size: 12px;
+    font-weight: 400;
+  }
+
+  .mobile-menu__heading {
+    padding: 4px 0 15px;
+    border-bottom: 1px solid #d9d9d6;
+    color: var(--color-uni-black);
+    font-size: var(--text-body);
+    font-weight: 400;
+  }
+
+  .mobile-menu__group {
+    padding: 20px 0 8px;
+    color: var(--color-uni-black);
+  }
+}

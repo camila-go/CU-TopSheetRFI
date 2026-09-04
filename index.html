@@ -3,147 +3,54 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Capella University</title>
+    <title>Capella — Bottom Sheet</title>
 
-    <!-- iOS Safari tints its bottom toolbar to match this. The bottom-bar design
-         (Figma 2013:19398) shows that toolbar rendered in Capella red sitting
-         directly under our action bar — that tint is what produces it, and
-         without it the browser chrome stays grey and breaks the red block. -->
+    <!-- iOS Safari tints its bottom toolbar to match this. Kept from the
+         homepage because the bottom-sheet design sits against the same red. -->
     <meta name="theme-color" content="#c10016" />
 
-    <!-- Description and social tags use Capella's own published wording from
-         capella.edu — no new marketing copy was written for this. -->
-    <meta
-      name="description"
-      content="Capella University is an accredited online university offering PhD, professional doctorate, master&apos;s and bachelor&apos;s programs for adults seeking to advance their career."
-    />
-
-    <!-- ⚠️ Canonical points at the LIVE homepage on purpose: this is a
-         prototype, and a self-referencing canonical would let a test
-         deployment compete with capella.edu for the same query. If this ever
-         becomes the production homepage, change it to its own URL. -->
-    <link rel="canonical" href="https://www.capella.edu/" />
-
-    <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="Capella University" />
-    <meta property="og:title" content="Capella University" />
-    <meta
-      property="og:description"
-      content="Capella University is an accredited online university offering PhD, professional doctorate, master&apos;s and bachelor&apos;s programs for adults seeking to advance their career."
-    />
-    <meta property="og:url" content="https://www.capella.edu/" />
-    <!-- ⚠️ Must become an absolute URL on the deployed host — several social
-         crawlers will not resolve a root-relative og:image. -->
-    <meta property="og:image" content="/assets/hero-people.webp" />
-    <meta property="og:image:alt" content="Capella University learners" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Capella University" />
-    <meta
-      name="twitter:description"
-      content="Capella University is an accredited online university offering PhD, professional doctorate, master&apos;s and bachelor&apos;s programs for adults seeking to advance their career."
-    />
+    <!-- ⚠️ Typekit carries the Acumin display faces (--font-display,
+         --font-acumin-pro). Without this the nav and headings silently fall
+         back to the system sans and every measurement shifts. -->
     <link rel="stylesheet" href="https://use.typekit.net/rrn6owv.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <!-- ⚠️ `1,700` is required, not optional: the carousel pull-quote is Inter
-         Bold Italic. Without that tuple the only italic face loaded is 400, so
-         `font-weight: 700` silently falls back to it and the quote renders
+    <!-- ⚠️ `1,700` is required, not optional: bold italic on capella.edu is
+         Inter Bold Italic. Without that tuple the only italic face loaded is
+         400, so `font-weight: 700` silently falls back to it and renders
          regular-weight no matter what the CSS says. -->
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400;1,700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="css/styles.css" />
-    <link rel="preload" as="image" href="/assets/hero-people.webp" fetchpriority="high" />
-    <link rel="preload" as="image" href="/assets/hero-red.webp" />
+    <!-- ⚠️ Load order is the original stylesheet's order. base defines the
+         reset and the shared `.btn` / `.page-container` rules both of the
+         others build on. -->
+    <link rel="stylesheet" href="css/base.css" />
+    <link rel="stylesheet" href="css/nav.css" />
+    <!-- ⚠️ Must come after nav.css — it re-paints the prototype's dark pill
+         header to the live capella.edu skin. Remove this one line to get the
+         prototype look back. -->
+    <link rel="stylesheet" href="css/nav-live.css" />
+    <link rel="stylesheet" href="css/main.css" />
+    <link rel="stylesheet" href="css/footer.css" />
+    <link rel="stylesheet" href="css/sheet.css" />
+    <link rel="stylesheet" href="css/rfi.css" />
+    <link rel="preload" as="image" href="/assets/hero-wide.jpg" fetchpriority="high" />
     <script src="https://kit.fontawesome.com/f1bee60eab.js" crossorigin="anonymous"></script>
-
-    <!-- Structured data. Mirrors the entity Capella already publishes on
-         capella.edu — same `@id`s, so answer engines resolve this page to the
-         SAME organization node rather than treating the prototype as a second,
-         competing entity. Every value here is copied from that published graph;
-         nothing is invented. Keep it in sync if the live entity changes. -->
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@graph": [
-          {
-            "@type": "CollegeOrUniversity",
-            "@id": "https://www.capella.edu/#organization",
-            "name": "Capella University",
-            "alternateName": "Capella",
-            "url": "https://www.capella.edu/",
-            "description": "Capella University is an online university offering flexible degree programs for working adults.",
-            "logo": {
-              "@type": "ImageObject",
-              "@id": "https://www.capella.edu/#logo",
-              "url": "https://www.capella.edu/content/dam/capella/logos/capella_logo_horizontal_RGB_448x95.svg"
-            },
-            "telephone": "+1-888-227-3552",
-            "email": "admissions@capella.edu",
-            "address": {
-              "@type": "PostalAddress",
-              "streetAddress": "Capella Tower, 225 South 6th Street, 9th Floor",
-              "addressLocality": "Minneapolis",
-              "addressRegion": "MN",
-              "postalCode": "55402",
-              "addressCountry": "US"
-            },
-            "contactPoint": [
-              {
-                "@type": "ContactPoint",
-                "contactType": "Admissions",
-                "telephone": "+1-888-227-3552",
-                "email": "admissions@capella.edu",
-                "areaServed": "US",
-                "availableLanguage": ["English"]
-              }
-            ],
-            "knowsAbout": [
-              "Online Higher Education",
-              "Adult Learning",
-              "Business",
-              "Nursing",
-              "Psychology",
-              "Education",
-              "Information Technology",
-              "Counseling",
-              "Social Work"
-            ],
-            "sameAs": [
-              "https://www.facebook.com/CapellaUniversity",
-              "https://www.linkedin.com/school/capella-university/",
-              "https://twitter.com/CapellaU",
-              "https://www.youtube.com/user/CapellaUniversity"
-            ]
-          },
-          {
-            "@type": "WebSite",
-            "@id": "https://www.capella.edu/#website",
-            "name": "Capella University",
-            "url": "https://www.capella.edu/",
-            "publisher": { "@id": "https://www.capella.edu/#organization" }
-          },
-          {
-            "@type": "WebPage",
-            "@id": "https://www.capella.edu/#webpage",
-            "url": "https://www.capella.edu/",
-            "name": "Capella University",
-            "description": "Capella University is an accredited online university offering PhD, professional doctorate, master's and bachelor's programs for adults seeking to advance their career.",
-            "inLanguage": "en-US",
-            "isPartOf": { "@id": "https://www.capella.edu/#website" },
-            "about": { "@id": "https://www.capella.edu/#organization" }
-          }
-        ]
-      }
-    </script>
   </head>
   <body>
+    <!-- ⚠️ Bypass block (WCAG 2.4.1). The header carries four megamenu triggers and
+         the page has ~148 links in total, so without this a keyboard user tabs
+         through the entire nav before reaching the hero. Visually hidden until
+         focused, then it pins itself to the top-left. -->
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+
     <div class="utility-bar">
       <div class="utility-bar__inner page-container">
         <a href="tel:1-866-679-9682" class="utility-bar__link">1-866-679-9682</a>
         <a href="#" class="utility-bar__link">Log in</a>
-        <a href="#" class="utility-bar__cta">
+        <a href="#" class="utility-bar__cta" data-rfi-open>
           <span class="utility-bar__cta-full">Request information</span>
           <span class="utility-bar__cta-short">Request info</span>
         </a>
@@ -153,21 +60,16 @@
     <header class="main-nav">
       <div class="main-nav__wrapper page-container">
         <nav class="main-nav__bar" aria-label="Main navigation">
+          <!-- The live site uses ONE horizontal lockup on the white bar. The
+               prototype's separate white shield + wordmark are still in
+               public/assets if the dark skin is ever restored. -->
           <a href="#" class="main-nav__logo" aria-label="Capella University home">
             <img
-              src="/assets/nav-shield.svg"
-              alt=""
-              class="main-nav__logo-shield logo-img"
-              width="31"
-              height="35"
-              decoding="async"
-            />
-            <img
-              src="/assets/nav-wordmark.svg"
+              src="/assets/logo-horizontal.svg"
               alt="Capella University"
-              class="main-nav__logo-wordmark logo-img"
-              width="127"
-              height="33"
+              class="main-nav__logo-lockup logo-img"
+              width="153"
+              height="32"
               decoding="async"
             />
           </a>
@@ -352,11 +254,11 @@
                       <li><a href="#">Sophia Admissions Pathway</a></li>
                     </ul>
                   </div>
-                  <a href="#" class="megamenu__apply">Apply Now</a>
+                  <a href="#" class="megamenu__apply" data-sheet-open>Apply Now</a>
               </div>
             </li>
           </ul>
-          <a href="#" class="btn btn--white btn--md main-nav__apply">Apply now</a>
+          <a href="#" class="btn btn--white btn--md main-nav__apply" data-sheet-open>Apply now</a>
           <button
             type="button"
             class="main-nav__menu-btn"
@@ -374,513 +276,287 @@
             <li><a href="#">Financing</a></li>
             <li><a href="#">Admissions</a></li>
           </ul>
-          <a href="#" class="btn btn--white btn--md main-nav__mobile-apply">Apply now</a>
+          <a href="#" class="btn btn--white btn--md main-nav__mobile-apply" data-sheet-open>Apply now</a>
         </div>
       </div>
     </header>
 
-    <main>
+    <!-- ============================================================
+         Homepage bands, built to match www.capella.edu (see DESIGN.md).
+         Copy is Capella's own published wording, taken from the live page.
+         Links are `#` — this is a prototype, so only the layout is real.
+         The bottom sheet itself goes in §7 at the end.
+         ============================================================ -->
+    <main id="main-content">
+      <!-- 1 ── Hero ------------------------------------------------ -->
       <section class="hero" aria-labelledby="hero-heading">
-        <div class="hero__background" aria-hidden="true">
-          <!-- Two layers: the red wall (parallaxes on scroll) and the people
-               cutout on top (static). See .hero__bg-red / .hero__bg-people. -->
-          <img
-            src="/assets/hero-red.webp"
-            alt=""
-            class="hero__bg-image hero__bg-red media-img"
-            decoding="async"
-          />
-          <img
-            src="/assets/hero-people.webp"
-            alt=""
-            class="hero__bg-image hero__bg-people media-img"
-            fetchpriority="high"
-            decoding="async"
-          />
-          <div class="hero__gradient"></div>
-        </div>
-        <div class="hero__content">
-          <h1 id="hero-heading" class="hero__title display-xl">what can&apos;t you do</h1>
-          <p class="hero__subtitle reveal" data-reveal-delay="4">Earn a degree built for your career.</p>
-          <a href="#" class="btn btn--white btn--lg hero__cta reveal" data-reveal-delay="5">Get started</a>
-        </div>
-      </section>
+        <div class="hero__inner">
+          <div class="hero__content">
+            <h1 id="hero-heading" class="hero__title display">What can&rsquo;t you do</h1>
+            <p class="hero__body">
+              You&rsquo;re always striving to do better in your life and your career &ndash; and you
+              never stop moving forward. So, when it&rsquo;s time for your next move, you take it.
+              With our online learning formats and career-focused degree programs, you can turn
+              ambition into achievement and prove what&rsquo;s possible.
+            </p>
+            <p class="hero__find">
+              <i class="fa-sharp fa-regular fa-clipboard-list hero__find-icon" aria-hidden="true"></i>
+              Find your program
+            </p>
+            <!-- <button data-degree> matching the live markup: these are the
+                 program finder's controls, not links. -->
+            <ul class="hero__chips">
+              <li><button type="button" class="chip-red" data-degree="bachelors" aria-pressed="false">Bachelor&rsquo;s</button></li>
+              <li><button type="button" class="chip-red" data-degree="masters" aria-pressed="false">Master&rsquo;s</button></li>
+              <li><button type="button" class="chip-red" data-degree="doctoral" aria-pressed="false">Doctoral</button></li>
+              <li><button type="button" class="chip-red" data-degree="certificate" aria-pressed="false">Certificate</button></li>
+            </ul>
 
-      <section class="program-finder" aria-labelledby="program-finder-heading">
-        <div class="program-finder__inner page-container">
-          <div class="program-finder__top">
-            <h2 id="program-finder-heading" class="program-finder__title">
-              catch what you&apos;re chasing.<br />
-              FIND YOUR PROGRAM NOW.
-            </h2>
-            <div class="program-finder__chips" role="tablist" aria-label="Degree level">
-              <button
-                type="button"
-                class="chip"
-                role="tab"
-                aria-selected="false"
-                data-degree="bachelors"
-              >
-                <i class="fa-sharp fa-regular fa-graduation-cap chip__icon" aria-hidden="true"></i>
-                Bachelor&apos;s
-              </button>
-              <button
-                type="button"
-                class="chip"
-                role="tab"
-                aria-selected="false"
-                data-degree="masters"
-              >
-                <i class="fa-sharp fa-regular fa-book chip__icon" aria-hidden="true"></i>
-                Master&apos;s
-              </button>
-              <button
-                type="button"
-                class="chip"
-                role="tab"
-                aria-selected="false"
-                data-degree="doctoral"
-              >
-                <i class="fa-sharp fa-regular fa-medal chip__icon" aria-hidden="true"></i>
-                Doctoral
-              </button>
-              <button
-                type="button"
-                class="chip"
-                role="tab"
-                aria-selected="false"
-                data-degree="certificate"
-              >
-                <i class="fa-sharp fa-regular fa-file-certificate chip__icon" aria-hidden="true"></i>
-                Certificate
-              </button>
-            </div>
-          </div>
-
-          <div
-            class="program-finder__panel"
-            id="program-finder-panel"
-            role="tabpanel"
-            aria-labelledby="program-finder-heading"
-            hidden
-          >
-            <div class="program-finder__fields">
-              <div class="program-finder__field">
-                <label class="visually-hidden" for="area-of-study">Area of Study</label>
-                <select id="area-of-study" class="program-finder__select">
-                  <option value="">Area of Study</option>
-                  <option value="business">Business</option>
-                  <option value="counseling">Counseling</option>
-                  <option value="education">Education</option>
-                  <option value="health-sciences">Health Sciences</option>
-                  <option value="nursing">Nursing</option>
-                  <option value="psychology">Psychology</option>
-                  <option value="technology">Technology</option>
-                </select>
-              </div>
-              <div class="program-finder__field">
-                <label class="visually-hidden" for="specialization">Specialization</label>
-                <select id="specialization" class="program-finder__select" disabled>
-                  <option value="">Specialization</option>
-                </select>
-              </div>
-              <a href="#" class="btn btn--primary btn--lg program-finder__cta">
+            <!-- Revealed a step at a time by js/hero.js, as on the live site:
+                 chip → area of study → specialization. No submit button; the
+                 live finder has none. -->
+            <div class="hero__finder">
+              <p class="hero__field hero__field--area" hidden>
+                <label class="hero__label" for="hero-area">Select area of study</label>
+                <select class="hero__select" id="hero-area"></select>
+              </p>
+              <p class="hero__field hero__field--spec" hidden>
+                <label class="hero__label" for="hero-spec">Select specialization</label>
+                <select class="hero__select" id="hero-spec"></select>
+              </p>
+              <!-- Step 3: only appears once a specialization is picked. Inline
+                   at the end of the select row on desktop, full-width below the
+                   selects at mobile. -->
+              <a href="#" class="hero__cta" hidden>
                 Explore my program
-                <svg class="icon-arrow" width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-                  <path d="M4 10h12M12 6l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                </svg>
+                <img
+                  src="/assets/double-arrow.svg"
+                  alt=""
+                  class="hero__cta-icon"
+                  width="23"
+                  height="23"
+                  decoding="async"
+                />
               </a>
             </div>
           </div>
         </div>
+        <!-- Desktop: bleeds off the right edge behind the copy. Mobile: stacks
+             above it. `aria-hidden` because the headline carries the meaning. -->
+        <img
+          src="/assets/hero-group.jpg"
+          alt="A group of men and women"
+          class="hero__image"
+          width="640"
+          height="432"
+          fetchpriority="high"
+          decoding="async"
+        />
       </section>
 
-      <div class="content-band">
-        <div class="content-band__bg" aria-hidden="true">
-          <img
-            src="/assets/content-band-desk.png"
-            alt=""
-            class="content-band__bg-image media-img"
-            decoding="async"
-          />
-          <div class="content-band__overlay"></div>
+      <!-- 2 ── Learning formats ------------------------------------ -->
+      <section class="formats" aria-labelledby="formats-heading">
+        <div class="page-container">
+          <h2 id="formats-heading" class="formats__title display">
+            &lsquo;One size fits all&rsquo; never fit you. Learn your way.
+          </h2>
+          <div class="formats__grid">
+            <article class="format-card">
+              <img src="/assets/flexpath-white.svg" alt="FlexPath" class="format-card__logo" width="180" height="45" loading="lazy" decoding="async" />
+              <h3 class="format-card__title">Learn on demand</h3>
+              <p class="format-card__body">
+                Set your own deadlines and use your experience to complete courses in select
+                programs at your own pace. The faster you move, the more you can save on tuition.
+              </p>
+              <a href="#" class="format-card__link">Is FlexPath right for you?</a>
+            </article>
+            <article class="format-card">
+              <img src="/assets/guidedpath-white.svg" alt="GuidedPath" class="format-card__logo" width="190" height="45" loading="lazy" decoding="async" />
+              <h3 class="format-card__title">Structured for your success</h3>
+              <p class="format-card__body">
+                Enjoy the flexibility to study anywhere, anytime with our GuidedPath learning
+                format, available in all programs. Structured timelines keep you on track.
+              </p>
+              <a href="#" class="format-card__link">Is GuidedPath right for you?</a>
+            </article>
+          </div>
         </div>
+      </section>
 
-        <section class="carousel" aria-label="Featured stories">
-          <div class="carousel__viewport page-container">
-            <div class="carousel__track">
-              <article class="carousel__slide carousel__slide--active" data-slide="0">
-                <div class="carousel__card carousel-reveal">
-                  <div class="carousel__panel" aria-hidden="true"></div>
-                  <span class="carousel__badge badge">Student experience</span>
-                  <div class="carousel__mockup">
-                    <img
-                      src="/assets/carousel-phone-mockup.png"
-                      alt="Capella mobile app showing course dashboard"
-                      class="carousel__image carousel__image--mockup"
-                      loading="lazy"
-                      decoding="async"
-                    />
-                  </div>
-                  <div class="carousel__content carousel__content--student">
-                    <!-- Break is deliberate — the headline is set on two lines.
-                         Sentence case here because `.carousel__title` applies
-                         `text-transform: uppercase`; it renders as
-                         "LEARNING THAT / FITS YOUR LIFE". -->
-                    <h2 class="carousel__title">Learning that<br />fits your life</h2>
-                    <p class="carousel__body">
-                      With our FlexPath learning format you can pursue a degree while working,
-                      raising a family and living your life.
-                    </p>
-                    <a href="#" class="btn btn--secondary btn--lg">Is FlexPath right for you?</a>
-                  </div>
-                </div>
-              </article>
-
-              <article class="carousel__slide" data-slide="1">
-                <div class="carousel__card carousel-reveal">
-                  <div class="carousel__panel" aria-hidden="true"></div>
-                  <span class="carousel__badge badge">Latest news</span>
-                  <div class="carousel__content carousel__content--partner">
-                    <!-- The partnership lockup ships as two artworks because the
-                         design re-flows it rather than scaling one: side-by-side
-                         with a vertical rule on desktop, stacked with a
-                         horizontal rule on mobile. `media` on the <source>
-                         matches the 1024 CSS breakpoint so only one downloads.
-                         The "official higher learning partner" line is baked
-                         into the artwork, so the alt text has to carry it. -->
-                    <picture class="carousel__lockup">
-                      <source
-                        media="(min-width: 1024px)"
-                        srcset="/assets/wnba-capella-lockup.webp"
-                        width="1984"
-                        height="815"
-                      />
-                      <img
-                        src="/assets/wnba-capella-lockup-stacked.webp"
-                        alt="WNBA and Capella University: official higher learning partner of the WNBA."
-                        width="908"
-                        height="1352"
-                        loading="lazy"
-                        decoding="async"
-                      />
-                    </picture>
-                    <a href="#" class="btn btn--secondary btn--lg">Join the dream team</a>
-                  </div>
-                </div>
-              </article>
-
-              <article class="carousel__slide" data-slide="2">
-                <div class="carousel__card carousel-reveal">
-                  <div class="carousel__panel" aria-hidden="true"></div>
-                  <span class="carousel__badge badge">Faculty</span>
-                  <div class="carousel__portrait carousel__portrait--faculty">
-                    <img
-                      src="/assets/carousel-portrait-faculty.webp"
-                      alt="Lisa Kraeger, PhD, RN Executive Dean"
-                      class="carousel__image carousel__image--portrait carousel__image--faculty"
-                      loading="lazy"
-                      decoding="async"
-                    />
-                  </div>
-                  <div class="carousel__content carousel__content--faculty">
-                    <h2 class="carousel__title">
-                      <span class="carousel__quote-mark" aria-hidden="true">&ldquo;</span>Capella
-                      University nurse practitioners play a pivotal role in delivering
-                      high-quality, holistic healthcare that truly makes a difference in
-                      people&apos;s lives.&rdquo;
-                    </h2>
-                    <div class="carousel__attribution">
-                      <p class="carousel__name">Lisa Kraeger</p>
-                      <p class="carousel__program">
-                        PhD, RN Executive Dean,<br />
-                        Healthcare Center of Excellence and Strategy.
-                      </p>
-                    </div>
-                    <a href="#" class="btn btn--secondary btn--lg">Full bio</a>
-                  </div>
-                </div>
-              </article>
-            </div>
-          </div>
-
-          <div class="carousel__dots page-container" role="tablist" aria-label="Carousel slides">
-            <button
-              type="button"
-              role="tab"
-              aria-selected="true"
-              aria-label="Slide 1: Student experience"
-              class="carousel__dot carousel__dot--active"
-            ></button>
-            <button
-              type="button"
-              role="tab"
-              aria-selected="false"
-              aria-label="Slide 2: WNBA partnership"
-              class="carousel__dot"
-            ></button>
-            <button
-              type="button"
-              role="tab"
-              aria-selected="false"
-              aria-label="Slide 3: Faculty"
-              class="carousel__dot"
-            ></button>
-          </div>
-        </section>
-
-        <section class="stats-section" aria-labelledby="stats-heading">
-          <div class="stats-section__inner page-container">
-          <div class="stats-section__left reveal">
-            <h2 id="stats-heading" class="stats-section__title">
-              You&apos;ve got plans.<br />
-              We&apos;ve got programs.
+      <!-- 3 ── Stats + popular programs ---------------------------- -->
+      <section class="stats" aria-labelledby="stats-heading">
+        <div class="page-container stats__grid">
+          <div class="stats__left">
+            <h2 id="stats-heading" class="stats__title display">
+              You&rsquo;ve got plans. We&rsquo;ve got programs.
             </h2>
-            <div class="stats-section__grid">
-              <div class="stats-section__stat">
-                <span class="stats-section__value">40</span>
-                <span class="stats-section__label">Degree programs</span>
+            <dl class="stats__list">
+              <div class="stat">
+                <dt class="stat__value">40</dt>
+                <dd class="stat__label">Degree programs</dd>
               </div>
-              <div class="stats-section__stat">
-                <span class="stats-section__value">80</span>
-                <span class="stats-section__label">Specializations</span>
+              <div class="stat">
+                <dt class="stat__value">80</dt>
+                <dd class="stat__label">Specializations</dd>
               </div>
-              <div class="stats-section__stat">
-                <span class="stats-section__value">1,530+</span>
-                <span class="stats-section__label">Courses available</span>
+              <div class="stat">
+                <dt class="stat__value">1,530+</dt>
+                <dd class="stat__label">Courses available</dd>
               </div>
-              <div class="stats-section__stat">
-                <span class="stats-section__value">63%</span>
-                <span class="stats-section__label">Part-time students</span>
+              <div class="stat">
+                <dt class="stat__value">63%</dt>
+                <dd class="stat__label">Part-time students</dd>
               </div>
-            </div>
-            <p class="stats-section__source">
-              Source:
-              <a
-                href="https://www.capella.edu/content/dam/capella/PDF/FactSheet.pdf"
-                target="_blank"
-                rel="noreferrer"
-                >Capella University Fact Sheet</a
-              >, as of December 31, 2024
+            </dl>
+            <p class="stats__source">
+              Source: <a href="#"><cite>Capella University Fact Sheet</cite></a>, as of December 31, 2024
             </p>
           </div>
-          <div class="stats-section__right reveal" data-reveal-delay="2">
-            <h3 class="stats-section__programs-heading heading-h4">Popular programs</h3>
-            <ul class="stats-section__programs">
+
+          <div class="stats__right">
+            <h3 class="programs__title">Popular programs</h3>
+            <ul class="programs">
               <li>
-                <a href="#" class="stats-section__program glass-card reveal" data-reveal-delay="0">
-                  <span>
-                    <span class="eyebrow stats-section__degree">BS</span>
-                    <span class="stats-section__program-name">RN-to-BSN</span>
+                <a href="#" class="program-card">
+                  <img src="/assets/icons/nursing.svg" alt="" class="program-card__icon" width="45" height="45" loading="lazy" decoding="async" />
+                  <span class="program-card__text">
+                    <span class="program-card__level">BS</span>
+                    <span class="program-card__name">RN-to-BSN</span>
                   </span>
-                  <svg class="icon-arrow" width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-                    <path d="M4 10h12M12 6l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                  </svg>
+                  <span class="program-card__arrow" aria-hidden="true">&rarr;</span>
                 </a>
               </li>
               <li>
-                <a href="#" class="stats-section__program glass-card reveal" data-reveal-delay="1">
-                  <span>
-                    <span class="eyebrow stats-section__degree">MS</span>
-                    <span class="stats-section__program-name">MSN</span>
+                <a href="#" class="program-card">
+                  <img src="/assets/icons/behaviors.svg" alt="" class="program-card__icon" width="45" height="45" loading="lazy" decoding="async" />
+                  <span class="program-card__text">
+                    <span class="program-card__level">MS</span>
+                    <span class="program-card__name">MS in Applied Behavior Analysis</span>
                   </span>
-                  <svg class="icon-arrow" width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-                    <path d="M4 10h12M12 6l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                  </svg>
+                  <span class="program-card__arrow" aria-hidden="true">&rarr;</span>
                 </a>
               </li>
               <li>
-                <a href="#" class="stats-section__program glass-card reveal" data-reveal-delay="2">
-                  <span>
-                    <span class="eyebrow stats-section__degree">MBA</span>
-                    <span class="stats-section__program-name">Master of Business Administration</span>
+                <a href="#" class="program-card">
+                  <img src="/assets/icons/briefcase.svg" alt="" class="program-card__icon" width="45" height="45" loading="lazy" decoding="async" />
+                  <span class="program-card__text">
+                    <span class="program-card__level">MBA</span>
+                    <span class="program-card__name">Master of Business Administration</span>
                   </span>
-                  <svg class="icon-arrow" width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-                    <path d="M4 10h12M12 6l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                  </svg>
+                  <span class="program-card__arrow" aria-hidden="true">&rarr;</span>
                 </a>
               </li>
               <li>
-                <a href="#" class="stats-section__program glass-card reveal" data-reveal-delay="3">
-                  <span>
-                    <span class="eyebrow stats-section__degree">BS</span>
-                    <span class="stats-section__program-name">BS in Business</span>
+                <a href="#" class="program-card">
+                  <img src="/assets/icons/handshake.svg" alt="" class="program-card__icon" width="45" height="45" loading="lazy" decoding="async" />
+                  <span class="program-card__text">
+                    <span class="program-card__level">MSW</span>
+                    <span class="program-card__name">Master of Social Work</span>
                   </span>
-                  <svg class="icon-arrow" width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-                    <path d="M4 10h12M12 6l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                  </svg>
+                  <span class="program-card__arrow" aria-hidden="true">&rarr;</span>
                 </a>
               </li>
             </ul>
-            <a href="#" class="btn btn--primary btn--lg stats-section__cta">
-              See all Capella programs
-              <svg class="icon-arrow" width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-                <path d="M4 10h12M12 6l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-              </svg>
-            </a>
-          </div>
-          </div>
-        </section>
-      </div>
-
-      <section class="tiles-section" aria-labelledby="tiles-heading">
-        <div class="tiles-section__inner page-container">
-          <h2 id="tiles-heading" class="tiles-section__title heading-h2">Make your move</h2>
-          <div class="tiles-section__grid">
-            <a href="#" class="glass-tile" data-tile="apply">
-              <span class="glass-tile__media" aria-hidden="true">
-                <img src="/assets/tile-apply.png" alt="" class="glass-tile__image" loading="lazy" decoding="async" />
-                <span class="glass-tile__scrim"></span>
-              </span>
-              <span class="glass-tile__glass" aria-hidden="true"></span>
-              <span class="glass-tile__label">Apply now</span>
-              <span class="glass-tile__icon" aria-hidden="true">
-                <i class="fa-sharp fa-regular fa-school"></i>
-              </span>
-            </a>
-            <a href="#" class="glass-tile" data-tile="admissions">
-              <span class="glass-tile__media" aria-hidden="true">
-                <span class="glass-tile__base"></span>
-                <img src="/assets/tile-admissions.png" alt="" class="glass-tile__image" loading="lazy" decoding="async" />
-                <span class="glass-tile__scrim"></span>
-              </span>
-              <span class="glass-tile__glass" aria-hidden="true"></span>
-              <span class="glass-tile__label">Learn about admissions</span>
-              <span class="glass-tile__icon" aria-hidden="true">
-                <i class="fa-sharp fa-regular fa-laptop-file"></i>
-              </span>
-            </a>
-            <a href="#" class="glass-tile" data-tile="financial">
-              <span class="glass-tile__media" aria-hidden="true">
-                <img src="/assets/tile-financial.png" alt="" class="glass-tile__image" loading="lazy" decoding="async" />
-                <span class="glass-tile__scrim"></span>
-              </span>
-              <span class="glass-tile__glass" aria-hidden="true"></span>
-              <span class="glass-tile__label">Navigate financial aid</span>
-              <span class="glass-tile__icon" aria-hidden="true">
-                <i class="fa-sharp fa-regular fa-badge-dollar"></i>
-              </span>
-            </a>
-            <a href="#" class="glass-tile" data-tile="scholarships">
-              <span class="glass-tile__media" aria-hidden="true">
-                <img src="/assets/tile-scholarships.png" alt="" class="glass-tile__image" loading="lazy" decoding="async" />
-                <span class="glass-tile__scrim"></span>
-              </span>
-              <span class="glass-tile__glass" aria-hidden="true"></span>
-              <span class="glass-tile__label">Explore scholarships</span>
-              <span class="glass-tile__icon" aria-hidden="true">
-                <i class="fa-sharp fa-regular fa-award"></i>
-              </span>
-            </a>
-            <a href="#" class="glass-tile" data-tile="flexpath">
-              <span class="glass-tile__media" aria-hidden="true">
-                <img src="/assets/tile-flexpath.png" alt="" class="glass-tile__image" loading="lazy" decoding="async" />
-                <span class="glass-tile__scrim"></span>
-              </span>
-              <span class="glass-tile__glass" aria-hidden="true"></span>
-              <span class="glass-tile__label">Explore FlexPath</span>
-              <span class="glass-tile__icon" aria-hidden="true">
-                <i class="fa-sharp fa-regular fa-laptop"></i>
-              </span>
-            </a>
-            <a href="#" class="glass-tile" data-tile="finish">
-              <span class="glass-tile__media" aria-hidden="true">
-                <img src="/assets/tile-finish.png" alt="" class="glass-tile__image" loading="lazy" decoding="async" />
-                <span class="glass-tile__scrim"></span>
-              </span>
-              <span class="glass-tile__glass" aria-hidden="true"></span>
-              <span class="glass-tile__label">Finish my degree</span>
-              <span class="glass-tile__icon" aria-hidden="true">
-                <i class="fa-sharp fa-regular fa-book-open"></i>
-              </span>
-            </a>
+            <a href="#" class="btn-red programs__cta">See all Capella programs</a>
           </div>
         </div>
       </section>
 
-      <section class="accreditation" aria-labelledby="accreditation-heading">
-        <div class="accreditation__inner page-container">
-          <!-- ⚠️ Not `aria-hidden`, and not `alt=""`. These four marks are the
-               only place ACBSP and CACREP appear anywhere on the page — the body
-               copy names the Higher Learning Commission, CCNE and CSWE, but not
-               those two. Hiding them cost screen-reader users and answer engines
-               two accreditations, which are among the strongest trust signals a
-               university has. Alt text names the accreditor; it adds no visible
-               copy. -->
-          <div class="accreditation__logos">
-            <img src="/assets/accr-acbsp.svg" alt="Accredited by the Accreditation Council for Business Schools and Programs (ACBSP)" class="accreditation__logo accreditation__logo--acbsp logo-img" loading="lazy" decoding="async" />
-            <img src="/assets/accr-cacrep.svg" alt="Accredited by the Council for Accreditation of Counseling and Related Educational Programs (CACREP)" class="accreditation__logo accreditation__logo--cacrep logo-img" loading="lazy" decoding="async" />
-            <img src="/assets/accr-ccne.png" alt="Accredited by the Commission on Collegiate Nursing Education (CCNE)" class="accreditation__logo accreditation__logo--ccne logo-img" loading="lazy" decoding="async" />
-            <img src="/assets/accr-cswe.png" alt="Accredited by the Council on Social Work Education (CSWE)" class="accreditation__logo accreditation__logo--cswe logo-img" loading="lazy" decoding="async" />
-          </div>
-          <div class="accreditation__content">
-            <h2 id="accreditation-heading" class="accreditation__title heading-h5">
-              Capella University is accredited by the Higher Learning Commission.
-            </h2>
-            <p class="accreditation__body">
-              Accreditation and recognitions provide the assurance we meet standards for quality of
-              faculty, curriculum, learner services, and fiscal stability.
-            </p>
-            <div class="accreditation__legal">
-              <p>
-                The baccalaureate degree program in nursing, master&apos;s degree program in nursing,
-                and Doctor of Nursing Practice program at Capella University are accredited by the
-                Commission on Collegiate Nursing Education. (<a href="http://www.ccneaccreditation.org" target="_blank" rel="noreferrer">http://www.ccneaccreditation.org</a>)
-              </p>
-              <p>
-                Capella University&apos;s Master of Social Work programs are accredited by the Council
-                on Social Work Education&apos;s Commission on Accreditation. For more information about
-                social work accreditation, visit
-                <a href="https://www.cswe.org/accreditation" target="_blank" rel="noreferrer">https://www.cswe.org/accreditation</a>.
-              </p>
-            </div>
-          </div>
-          <a href="#" class="btn btn--outline btn--md accreditation__cta">See all accreditations</a>
+      <!-- 4 ── Make your move -------------------------------------- -->
+      <section class="move" aria-labelledby="move-heading">
+        <div class="move__inner">
+          <h2 id="move-heading" class="move__title display">Make your move</h2>
+          <ul class="move__tiles">
+            <li>
+              <a href="#" class="move-tile">
+                <img src="/assets/icons/diploma.svg" alt="" class="move-tile__icon" width="23" height="23" loading="lazy" decoding="async" />
+                Finish my degree
+              </a>
+            </li>
+            <li>
+              <a href="#" class="move-tile">
+                <img src="/assets/icons/financial-aid.svg" alt="" class="move-tile__icon" width="23" height="23" loading="lazy" decoding="async" />
+                Get help with financial aid
+              </a>
+            </li>
+            <li>
+              <a href="#" class="move-tile">
+                <img src="/assets/icons/admissions.svg" alt="" class="move-tile__icon" width="23" height="23" loading="lazy" decoding="async" />
+                Learn more about admissions
+              </a>
+            </li>
+            <li>
+              <a href="#" class="move-tile">
+                <img src="/assets/icons/scholarship.svg" alt="" class="move-tile__icon" width="23" height="23" loading="lazy" decoding="async" />
+                Find out more about scholarships
+              </a>
+            </li>
+            <li>
+              <!-- ⚠️ Labelled just "Apply", but on the live site it links to
+                   apply.capella.edu like the rest, so it opens the sheet too. -->
+              <a href="#" class="move-tile" data-sheet-open>
+                <img src="/assets/icons/student.png" alt="" class="move-tile__icon" width="23" height="23" loading="lazy" decoding="async" />
+                Apply
+              </a>
+            </li>
+            <li>
+              <a href="#" class="move-tile">
+                <img src="/assets/icons/deadlines.svg" alt="" class="move-tile__icon" width="23" height="23" loading="lazy" decoding="async" />
+                Explore FlexPath
+              </a>
+            </li>
+          </ul>
         </div>
       </section>
 
-      <section class="action-cta" aria-labelledby="action-cta-heading">
-        <div class="action-cta__panels" aria-hidden="true">
-          <!-- Single full-bleed TV-spot clip. WebM first, MP4 fallback; muted +
-               playsinline so it autoplays as background video everywhere (incl.
-               iOS). `preload="none"` means not a byte is fetched until
-               initCtaVideos() sees the section approach the viewport, and that
-               same function swaps in the 960-wide `-sm` pair on phones before
-               the first fetch. The poster paints immediately either way. -->
-          <video
-            class="action-cta__video"
-            loop
-            muted
-            playsinline
-            preload="none"
-            poster="/assets/videos/cta-tvspot-poster.jpg"
-            data-poster-portrait="/assets/videos/cta-tvspot-portrait-poster.webp"
-            data-src-webm-sm="/assets/videos/cta-tvspot-sm.webm"
-            data-src-mp4-sm="/assets/videos/cta-tvspot-sm.mp4"
-            data-type-mp4-sm='video/mp4; codecs="avc1.64001F"'
-            data-src-webm-portrait="/assets/videos/cta-tvspot-portrait.webm"
-            data-src-mp4-portrait="/assets/videos/cta-tvspot-portrait.mp4"
-            data-type-mp4-portrait='video/mp4; codecs="avc1.64001F"'
-          >
-            <!-- Codec strings are exact (read out of the files' avcC boxes), so a
-                 browser that can't decode VP9 — Safari before 14.1, iOS before
-                 17.4 — skips straight to the MP4 without spending a request on
-                 the WebM. Both report "probably" from canPlayType. -->
-            <source src="/assets/videos/cta-tvspot.webm" type='video/webm; codecs="vp9"' />
-            <source src="/assets/videos/cta-tvspot.mp4" type='video/mp4; codecs="avc1.640028"' />
-          </video>
-        </div>
-        <div class="action-cta__overlay">
-          <h2 id="action-cta-heading" class="action-cta__title display-lg">what are you waiting for?</h2>
-          <a href="#" class="btn btn--ghost btn--lg action-cta__btn">
-            Get started
-            <svg class="icon-arrow" width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-              <path d="M4 10h12M12 6l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-          </a>
+      <!-- 5 ── Accreditation --------------------------------------- -->
+      <section class="accred" aria-labelledby="accred-heading">
+        <div class="page-container">
+          <!-- ⚠️ accred-*.png, NOT the prototype's accr-*.svg. Those are WHITE
+               knockout artwork drawn for a dark band — on this white band they
+               load fine, occupy layout, and are simply invisible. These are the
+               live site's full-colour versions. -->
+          <ul class="accred__logos">
+            <li><img src="/assets/accred-acbsp.png" alt="Capella University offers multiple business programs accredited by the Accreditation Council for Business Schools and Programs" width="255" height="180" loading="lazy" decoding="async" /></li>
+            <li><img src="/assets/accred-cacrep.png" alt="Council for Accreditation of Counseling and Related Educational Programs" width="255" height="180" loading="lazy" decoding="async" /></li>
+            <li><img src="/assets/accred-ccne.png" alt="The BSN, MSN, and DNP degree programs at Capella University are accredited by the Commission on Collegiate Nursing Education" width="255" height="180" loading="lazy" decoding="async" /></li>
+            <li><img src="/assets/accred-cswe.png" alt="Accredited by the Council on Social Work Education Board of Accreditation" width="448" height="300" loading="lazy" decoding="async" /></li>
+          </ul>
+          <h2 id="accred-heading" class="accred__lead">
+            Capella University is accredited by the Higher Learning Commission.
+          </h2>
+          <p class="accred__sub">
+            Accreditation and recognitions provide the assurance we meet standards for quality of
+            faculty, curriculum, learner services, and fiscal stability.
+          </p>
+          <p class="accred__link"><a href="#">See all of Capella&rsquo;s accreditations</a></p>
+          <p class="accred__fine">
+            *The baccalaureate degree program in nursing, master&rsquo;s degree program in nursing,
+            Doctor of Nursing Practice program and post-graduate APRN certificate program at
+            Capella University is accredited by the Commission on Collegiate Nursing Education
+            (<a href="http://www.ccneaccreditation.org">http://www.ccneaccreditation.org</a>).
+          </p>
+          <p class="accred__fine">
+            Capella University&rsquo;s Bachelor of Social Work and Master of Social Work programs are
+            accredited by the Council on Social Work Education&rsquo;s Board on Accreditation. For
+            more information about social work accreditation, visit:
+            <a href="https://www.cswe.org/accreditation">https://www.cswe.org/accreditation</a>.
+          </p>
         </div>
       </section>
     </main>
+
+    <!-- 6 ── Mobile-only fixed action bar -------------------------------
+         Pinned to the bottom of the viewport below 769px, exactly as on the
+         live site. The `theme-color` meta in <head> tints iOS Safari's toolbar
+         the same red so the bar and the browser chrome read as one block.
+         This is the surface the bottom sheet is expected to open from. -->
+    <!-- ⚠️ `role="group"` is load-bearing: an `aria-label` on a bare <div> is inert,
+         so the bar had a label nothing could announce. -->
+    <div class="action-bar" role="group" aria-label="Quick actions">
+      <a href="#" class="action-bar__btn" data-sheet-open>Apply now</a>
+      <a href="#" class="action-bar__btn" data-rfi-open>Request info</a>
+    </div>
 
     <footer class="footer">
       <div class="footer__inner page-container">
@@ -1017,24 +693,380 @@
       </div>
     </footer>
 
-    <!-- Mobile action bar — the live site's `.ctanav-chat-bar`, shown below the
-         hamburger breakpoint only. Page-level (not part of the nav), so it stays
-         put while the page scrolls. -->
-    <nav class="action-bar" aria-label="Quick actions">
-      <a href="#" class="action-bar__link">Apply now</a>
-      <!-- The design draws a literal pipe between the two, not a border on the
-           halves. Kept as its own element so it stays out of the accessible
-           name of either link. -->
-      <span class="action-bar__divider" aria-hidden="true">|</span>
-      <a href="#" class="action-bar__link">Request info</a>
-    </nav>
 
-    <!-- Chat launcher, all breakpoints. No chat backend in the prototype, so
-         this is a button with no handler rather than a link that would jump. -->
-    <button type="button" class="chat-button" aria-label="Hello, have a question? Let's chat.">
-      <span class="chat-button__label" aria-hidden="true">Chat<br />now</span>
-    </button>
+    <!-- ============================================================
+         Application sheet — bottom sheet on mobile, right-aligned modal on
+         desktop. Ported from apply.capella.edu (AEM adaptive form), captured
+         2026-08-13. All ten wizard steps are present; see DESIGN.md.
 
-    <script type="module" src="js/main.js"></script>
+         ⚠️ PROTOTYPE ONLY — NOT FOR DEPLOYMENT. Steps 3–5 and 9 reproduce the
+         real application's date-of-birth, last-4-SSN and password fields. There
+         is no form action, no endpoint and no storage: nothing is submitted or
+         persisted anywhere, and `autocomplete="off"` keeps browsers from
+         retaining entries. Do not deploy this publicly and do not type real
+         personal data into it.
+         ============================================================ -->
+    <div class="sheet-scrim" data-sheet-scrim hidden></div>
+
+    <section
+      class="sheet"
+      id="application-sheet"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="sheet-title"
+      hidden
+    >
+      <header class="sheet__header">
+        <button type="button" class="sheet__dismiss" data-sheet-close aria-label="Close application">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <!-- The Capella lockup stands in for the per-step title. The title is kept
+             in the DOM but visually hidden so `aria-labelledby` still announces
+             which step you are on — a logo alone announces nothing useful. -->
+        <img
+          src="/assets/logo-horizontal.svg"
+          alt="Capella University"
+          class="sheet__logo"
+          width="132"
+          height="28"
+          decoding="async"
+        />
+        <h2 class="sheet__title visually-hidden" id="sheet-title">Apply to Capella</h2>
+      </header>
+
+      <div class="sheet__body" data-sheet-body>
+        <!-- 1 ── Name -->
+        <div class="sheet__step" data-step="1">
+          <h3 class="sheet__step-title">Capella University is here to help with your educational journey.</h3>
+          <p class="sheet__step-sub">Let&rsquo;s get to know you better. What&rsquo;s your name?</p>
+          <p class="sheet__field">
+            <label class="sheet__label" for="app-first">First Name</label>
+            <input class="sheet__input" id="app-first" name="firstName" type="text"
+                   placeholder="First Name" autocomplete="off" />
+            <span class="sheet__error" id="app-first-error" role="alert">Please enter your first name.</span>
+          </p>
+          <p class="sheet__field">
+            <label class="sheet__label" for="app-last">Last Name</label>
+            <input class="sheet__input" id="app-last" name="lastName" type="text"
+                   placeholder="Last Name" autocomplete="off" />
+            <span class="sheet__error" id="app-last-error" role="alert">Please enter your last name.</span>
+          </p>
+          <p class="sheet__fine">Already started an application? <a href="#">Log In</a></p>
+        </div>
+
+        <!-- 2 ── Welcome interstitial. Conditional on live (cl-dob-flow-check). -->
+        <div class="sheet__step sheet__step--message" data-step="2" hidden>
+          <h3 class="sheet__step-title">
+            It&rsquo;s nice to meet you, <span data-first-name>there</span>. Let&rsquo;s get started.
+          </h3>
+        </div>
+
+        <!-- 3 ── Date of birth -->
+        <div class="sheet__step" data-step="3" hidden>
+          <h3 class="sheet__step-title">What&rsquo;s your date of birth?</h3>
+          <p class="sheet__step-sub">We use this information and ensure your account is safe.</p>
+          <p class="sheet__field">
+            <label class="sheet__label" for="app-dob">MM/DD/YYYY</label>
+            <input class="sheet__input" id="app-dob" name="dob" type="text"
+                   inputmode="numeric" placeholder="MM/DD/YYYY" autocomplete="off" />
+            <span class="sheet__error" id="app-dob-error" role="alert">Please enter a valid date of birth as MM/DD/YYYY.</span>
+          </p>
+        </div>
+
+        <!-- 4 ── Confirm DOB. Conditional on live (cl-dob-match). -->
+        <div class="sheet__step" data-step="4" hidden>
+          <h3 class="sheet__step-title">Verify your birthdate</h3>
+          <p class="sheet__step-sub">
+            We want to make sure our records are correct. Please review and make any needed changes
+            before we continue.
+          </p>
+          <p class="sheet__field">
+            <label class="sheet__label" for="app-dob-confirm">Birth Date</label>
+            <input class="sheet__input" id="app-dob-confirm" name="dobConfirm" type="text"
+                   placeholder="Birth Date" autocomplete="off" readonly />
+          </p>
+        </div>
+
+        <!-- 5 ── SSN last four. Conditional on live (cl-ssn-number-match). -->
+        <div class="sheet__step" data-step="5" hidden>
+          <h3 class="sheet__step-title">Please enter last four digits of your Social Security Number</h3>
+          <p class="sheet__step-sub">This helps us verify your identity.</p>
+          <p class="sheet__field">
+            <label class="sheet__label" for="app-ssn">Enter last 4 digits of SSN</label>
+            <input class="sheet__input" id="app-ssn" name="ssnLast4" type="text"
+                   inputmode="numeric" maxlength="4"
+                   placeholder="Enter last 4 digits of SSN" autocomplete="off" />
+            <span class="sheet__error" id="app-ssn-error" role="alert">Please enter the last 4 digits of your SSN.</span>
+          </p>
+          <label class="sheet__check">
+            <input type="checkbox" name="noSsn" data-no-ssn />
+            I don&rsquo;t have Social Security Number
+          </label>
+        </div>
+
+        <!-- 6 ── Existing account found. Conditional on live (cl-ssn-match-login). -->
+        <div class="sheet__step" data-step="6" hidden>
+          <h3 class="sheet__step-title">We meet again!</h3>
+          <p class="sheet__note">
+            We&rsquo;ve matched your information with your existing Capella account. Please log in with
+            your user ID to continue your application.
+          </p>
+          <p class="sheet__step-sub">
+            If you have any questions or need support, contact an enrollment specialist at
+            1-888-227-3552
+          </p>
+        </div>
+
+        <!-- 7 ── Email -->
+        <div class="sheet__step" data-step="7" hidden>
+          <h3 class="sheet__step-title">What&rsquo;s your email address?</h3>
+          <p class="sheet__step-sub">
+            This will help you save your information so you can return to work on it later.
+          </p>
+          <p class="sheet__field">
+            <label class="sheet__label" for="app-email">Email</label>
+            <input class="sheet__input" id="app-email" name="email" type="email"
+                   placeholder="Email" autocomplete="off" />
+            <span class="sheet__error" id="app-email-error" role="alert">Please enter a valid email address.</span>
+          </p>
+          <p class="sheet__fine">
+            By providing your information, you consent to receive occasional special promotional
+            offers and education opportunities by phone, text message and email via automated
+            technology, including artificial or prerecorded voice, from Capella University. You may
+            opt out at any time. Consent is not required to purchase goods or services. You can
+            always call us at 1.888.227.9897. We respect your privacy.
+          </p>
+        </div>
+
+        <!-- 8 ── Confirm email -->
+        <div class="sheet__step" data-step="8" hidden>
+          <h3 class="sheet__step-title">
+            Is this your current email, <span data-first-name>there</span>?
+          </h3>
+          <p class="sheet__step-sub">
+            We&rsquo;ll use this email to save your information as you complete this application.
+          </p>
+          <p class="sheet__field">
+            <label class="sheet__label" for="app-email-confirm">Email</label>
+            <input class="sheet__input" id="app-email-confirm" name="emailConfirm" type="email"
+                   placeholder="Email" autocomplete="off" readonly />
+          </p>
+        </div>
+
+        <!-- 9 ── Password -->
+        <div class="sheet__step" data-step="9" hidden>
+          <h3 class="sheet__step-title">Set up your Capella password.</h3>
+          <p class="sheet__step-sub">
+            This will keep your application and personal information secure.
+          </p>
+          <p class="sheet__field">
+            <label class="sheet__label" for="app-password">Password</label>
+            <input class="sheet__input" id="app-password" name="password" type="password"
+                   placeholder="Password" autocomplete="new-password" />
+            <span class="sheet__error" id="app-password-error" role="alert">Please enter a password.</span>
+          </p>
+          <ul class="sheet__hints">
+            <li>8-15 characters</li>
+            <li>One uppercase letter</li>
+            <li>One lowercase letter</li>
+            <li>One number</li>
+            <li>One special character (such as $, #, &amp;, !)</li>
+            <li>Cannot contain your name or email address</li>
+          </ul>
+        </div>
+
+        <!-- 10 ── Account created -->
+        <div class="sheet__step sheet__step--message" data-step="10" hidden>
+          <h3 class="sheet__step-title">Your Capella account is all set up!</h3>
+          <p class="sheet__step-sub">
+            We&rsquo;ll automatically save your progress after each step as you work on your
+            application. Need a break? You can use your email and password to log in and continue at
+            any time.
+          </p>
+        </div>
+      </div>
+
+      <!-- Docked final action, per the anatomy. Labels change per step, matching
+           the live wizard ("Continue", "Looks good!", "Agree and Go", …). -->
+      <footer class="sheet__footer">
+        <div class="sheet__actions">
+          <button type="button" class="sheet__action sheet__action--ghost" data-sheet-back hidden>
+            Back
+          </button>
+          <button type="button" class="sheet__action" data-sheet-next>Continue</button>
+        </div>
+        <span class="sheet__handle" aria-hidden="true"></span>
+      </footer>
+    </section>
+
+    <!-- RFI top sheet, opened from the Request information CTAs. Markup is
+         static; the cascading dropdowns are filled from js/programs.js.
+         Design: FormBottomSheetModal Figma, node 34:8023. -->
+    <div data-rfi class="rfi">
+      <div class="rfi__scrim" data-rfi-scrim hidden></div>
+
+      <section
+        class="rfi__panel"
+        data-rfi-panel
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="rfi-title"
+        aria-hidden="true"
+        hidden
+      >
+        <header class="rfi__header">
+          <button
+            type="button"
+            class="rfi__dismiss"
+            data-rfi-close
+            aria-label="Close request information form"
+          >
+            <i class="fa-regular fa-xmark" aria-hidden="true"></i>
+          </button>
+        </header>
+
+        <div class="rfi__body" data-rfi-body>
+          <h2 class="rfi__title" id="rfi-title">Request more information</h2>
+          <p class="rfi__intro">
+            Complete this form to receive our University Guide. An enrollment specialist who
+            specializes in your area of study will contact you soon to answer your questions.
+          </p>
+
+          <form data-rfi-form novalidate>
+            <!-- Step 1 of 2 — programme selection -->
+            <section class="rfi__step" data-rfi-step aria-label="Step 1 of 2">
+              <p class="rfi__step-label">STEP 1 of 2</p>
+              <p class="rfi__required">All fields are required.</p>
+
+              <div class="rfi__fields">
+                <div class="rfi__field">
+                  <label class="visually-hidden" for="rfi-degree">Degree level</label>
+                  <select class="rfi__select" id="rfi-degree" name="degree" required></select>
+                  <p class="rfi__error"></p>
+                </div>
+                <div class="rfi__field">
+                  <label class="visually-hidden" for="rfi-area">Area of study</label>
+                  <select class="rfi__select" id="rfi-area" name="area" required></select>
+                  <p class="rfi__error"></p>
+                </div>
+                <div class="rfi__field">
+                  <label class="visually-hidden" for="rfi-program">Program of interest</label>
+                  <select class="rfi__select" id="rfi-program" name="program" required></select>
+                  <p class="rfi__error"></p>
+                </div>
+              </div>
+
+              <div class="rfi__actions">
+                <button type="button" class="rfi__btn rfi__btn--primary" data-rfi-next>
+                  Next <i class="fa-regular fa-arrow-right" aria-hidden="true"></i>
+                </button>
+              </div>
+            </section>
+
+            <!-- Step 2 of 2 — contact details -->
+            <section class="rfi__step" data-rfi-step aria-label="Step 2 of 2" hidden>
+              <p class="rfi__step-label">STEP 2 of 2</p>
+              <p class="rfi__required">All fields are required.</p>
+
+              <div class="rfi__fields">
+                <div class="rfi__field rfi__field--stacked">
+                  <label class="rfi__label" for="rfi-first-name">*First name</label>
+                  <input class="rfi__input" id="rfi-first-name" name="first-name" type="text" autocomplete="given-name" required />
+                  <i class="rfi__check fa-regular fa-check" aria-hidden="true"></i>
+                  <p class="rfi__error"></p>
+                </div>
+                <div class="rfi__field rfi__field--stacked">
+                  <label class="rfi__label" for="rfi-last-name">*Last name</label>
+                  <input class="rfi__input" id="rfi-last-name" name="last-name" type="text" autocomplete="family-name" required />
+                  <i class="rfi__check fa-regular fa-check" aria-hidden="true"></i>
+                  <p class="rfi__error"></p>
+                </div>
+                <div class="rfi__field rfi__field--stacked">
+                  <label class="rfi__label" for="rfi-email">*Email address</label>
+                  <input class="rfi__input" id="rfi-email" name="email" type="email" autocomplete="email" required />
+                  <i class="rfi__check fa-regular fa-check" aria-hidden="true"></i>
+                  <p class="rfi__error"></p>
+                </div>
+                <div class="rfi__field rfi__field--stacked">
+                  <label class="rfi__label" for="rfi-phone">*Phone number</label>
+                  <input class="rfi__input" id="rfi-phone" name="phone" type="tel" autocomplete="tel" required />
+                  <i class="rfi__check fa-regular fa-check" aria-hidden="true"></i>
+                  <p class="rfi__error"></p>
+                </div>
+                <div class="rfi__field rfi__field--stacked">
+                  <label class="rfi__label" for="rfi-zip">*Zip code</label>
+                  <input class="rfi__input" id="rfi-zip" name="zip" type="text" inputmode="numeric" autocomplete="postal-code" required />
+                  <i class="rfi__check fa-regular fa-check" aria-hidden="true"></i>
+                  <p class="rfi__error"></p>
+                </div>
+              </div>
+
+              <fieldset class="rfi__radios-wrap">
+                <legend class="rfi__question">Are you associated with the US military?</legend>
+                <div class="rfi__radios">
+                  <label class="rfi__radio">
+                    <input type="radio" name="military" value="yes" required />
+                    <span>Yes</span>
+                  </label>
+                  <label class="rfi__radio">
+                    <input type="radio" name="military" value="no" required />
+                    <span>No</span>
+                  </label>
+                </div>
+              </fieldset>
+
+              <fieldset class="rfi__radios-wrap">
+                <legend class="rfi__question">
+                  If you enroll at Capella University, do you intend to use education benefits
+                  earned through military service?
+                </legend>
+                <div class="rfi__radios">
+                  <label class="rfi__radio">
+                    <input type="radio" name="benefits" value="yes" required />
+                    <span>Yes</span>
+                  </label>
+                  <label class="rfi__radio">
+                    <input type="radio" name="benefits" value="no" required />
+                    <span>No</span>
+                  </label>
+                </div>
+              </fieldset>
+
+              <p class="rfi__legal">
+                By providing your information, you consent to receive occasional special
+                promotional offers and education opportunities by phone, text message and email
+                via automated technology from Capella University and its partner Strayer
+                University. Consent is not required to purchase goods or services. You can always
+                call us at 1.888.227.9897. <a href="#">We respect your privacy.</a>
+              </p>
+
+              <div class="rfi__actions">
+                <button type="submit" class="rfi__btn rfi__btn--primary">
+                  I accept, get program details
+                </button>
+                <button type="button" class="rfi__btn rfi__btn--secondary" data-rfi-back>
+                  <i class="fa-regular fa-arrow-left" aria-hidden="true"></i> Back
+                </button>
+              </div>
+            </section>
+
+            <!-- Confirmation. Prototype only — nothing is submitted anywhere. -->
+            <section class="rfi__step rfi__success" data-rfi-step aria-label="Request received" hidden>
+              <h3 class="rfi__title">Thank you.</h3>
+              <p>
+                Your request is on its way. An enrollment specialist will be in touch soon with
+                your University Guide.
+              </p>
+            </section>
+          </form>
+        </div>
+      </section>
+    </div>
+
+    <script type="module" src="/js/nav.js"></script>
+    <script type="module" src="/js/hero.js"></script>
+    <script type="module" src="/js/footer.js"></script>
+    <script type="module" src="/js/sheet.js"></script>
+    <script type="module" src="/js/rfi.js"></script>
   </body>
 </html>
