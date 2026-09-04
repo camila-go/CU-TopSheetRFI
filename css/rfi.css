@@ -25,9 +25,13 @@
   --rfi-pad: 24px;
   --rfi-field-h: 48px;
   --rfi-radius-input: 2px;
-  --rfi-gap: 16px;
-  --rfi-gap-sm: 12px;
-  --rfi-valid: #1c7c3f;
+  --rfi-gap: 16px; /* gl-gap-xs */
+  --rfi-gap-sm: 12px; /* gl-gap-2xs */
+  /* gl-color-success-subtle-on-surface — the valid-field check */
+  --rfi-valid: #0a822f;
+  /* color-neutral-subtle-on-surface — the small label above a filled value.
+     Deliberately NOT --color-boulder-600 (#696f74), which is a near-miss. */
+  --rfi-label: #696969;
 }
 
 /* ---- Scrim ------------------------------------------------------------- */
@@ -213,7 +217,7 @@
   left: var(--rfi-gap);
   font-size: 0.625rem; /* 10px */
   line-height: 1.5;
-  color: var(--color-boulder-600);
+  color: var(--rfi-label);
   pointer-events: none;
 }
 
@@ -344,7 +348,9 @@
   box-shadow: var(--shadow-btn-hover);
 }
 
+/* gl-border-sm = 2 on the outlined variant (button-color-outline-primary). */
 .rfi__btn--secondary {
+  border-width: 2px;
   border-color: var(--color-uni-red);
   background: var(--color-white);
   color: var(--color-uni-red);
